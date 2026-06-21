@@ -61,13 +61,13 @@
             <input type="radio" name="radio-btn" id="radio2">
 
             <div class="slide first">
-                <img src="{{ asset($data->slider1_image) }}" alt="Slider 1">
+                <img src="img/bg-masjid.jpg" style="opacity: 0.5; background-color: #000;" alt="Slider 0">
                 <div class="info">
                     <h1>{!! nl2br(e($data->slider1_text)) !!}</h1>
                 </div>
             </div>
             <div class="slide">
-                <img src="{{ asset($data->slider2_image) }}" alt="Slider 1">
+                <img src="img/bg-masjid-2.jpg" style="opacity: 0.5; background-color: #000;" alt="Slider 1">
                 <div class="info">
                     <h2>{!! nl2br(e($data->slider2_text)) !!}</h2>
                 </div>
@@ -118,22 +118,22 @@
                 <li class="card-item swiper-slide">
                     <div href="#" class="card-link">
                         @php
-                        $nama = $room->jenis_kamar;
-                        if ($nama === 'Standard') {
-                            $namaFileKhusus = "Standar Room";
-                        } else {
-                            $namaFileKhusus = $nama;
-                        }
-                        $jpg  = "images/{$namaFileKhusus}.jpg";
-                        $jpeg = "images/{$namaFileKhusus}.jpeg";
-                        
-                        if (file_exists(public_path($jpg))) {
-                            $foto = $jpg;
-                        } elseif (file_exists(public_path($jpeg))) {
-                            $foto = $jpeg;
-                        } else {
-                            $foto = "images/default.jpg"; // fallback optional
-                        }
+                            $nama = $room->jenis_kamar;
+                            if ($nama === 'Standard') {
+                                $namaFileKhusus = "Standar Room";
+                            } else {
+                                $namaFileKhusus = $nama;
+                            }
+                            $jpg  = "images/{$namaFileKhusus}.jpg";
+                            $jpeg = "images/{$namaFileKhusus}.jpeg";
+                            
+                            if (file_exists(public_path($jpg))) {
+                                $foto = $jpg;
+                            } elseif (file_exists(public_path($jpeg))) {
+                                $foto = $jpeg;
+                            } else {
+                                $foto = "images/default.jpg"; // fallback optional
+                            }
                         @endphp
                         <img src="{{ asset($foto) }}" class="card-image">
                         <p class="badge">{{ $room->jenis_kamar }}</p>
@@ -223,7 +223,7 @@
                     <p><i class="fas fa-map-marker-alt"></i>{{ $data->location }}</p>
                 </div>
                 <div class="footer-bottom-links">
-                    <a href="#">Home</a>
+                    <a href="#">Pesma Inn</a>
                     <span>|</span>
                     <a href="https://pesma.ums.ac.id/" target="_blank">Pesma UMS</a>
                 </div>

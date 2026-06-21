@@ -59,8 +59,8 @@ Route::get('/booking/payment/{id}', [BookingController::class, 'payment'])
 Route::post('/booking/payment/{id}/upload', [BookingController::class, 'uploadBuktiPembayaran'])
     ->name('booking.payment.upload');
 
-Route::get('/booking/success/{id}', [BookingController::class, 'success'])
-    ->name('booking.success');
+// Route::get('/booking/success/{id}', [BookingController::class, 'success'])
+//     ->name('booking.success');
 
 Route::post('/booking/success/{id}', [BookingController::class, 'success'])
     ->name('booking.success');
@@ -157,7 +157,7 @@ Route::middleware([\App\Http\Middleware\AdminAuth::class])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::post('/booking/payment/{id}', [BookingController::class, 'uploadBuktiPembayaran'])->name('booking.payment.upload');
+    // Route::post('/booking/payment/{id}', [BookingController::class, 'uploadBuktiPembayaran'])->name('booking.payment.upload');
     Route::post('/booking/payment/cash/{id}', [BookingController::class, 'confirmCash'])->name('booking.payment.cash');
     Route::get('/admin/report/pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('report.pdf');
     Route::get('/admin/report/csv', [\App\Http\Controllers\ReportController::class, 'exportCsv'])->name('report.csv');

@@ -128,7 +128,7 @@
       <label class="form-label">Pilih Jenis Kamar <span style="color:red">*</span></label>
       <div id="room-options">
         @foreach($jenisKamarList as $jenis)
-        <div class="room-card" onclick="selectRoom('{{ $jenis->jenis_kamar }}', {{ $jenis->harga }})">
+        <div class="room-card" onclick="selectRoom('{{ $jenis->jenis_kamar }}', '{{ $jenis->harga }}')">
           <input type="radio" name="jenis_kamar_pilihan" value="{{ $jenis->jenis_kamar }}" style="display:none" required>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div>

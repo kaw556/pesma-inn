@@ -53,7 +53,7 @@ body {
   left: 5%;
   transform: translateY(-50%);
   text-align: left;
-  color: #b1193f; 
+  color: #0D0B61; 
   padding: 15px 20px;
   border-radius: 8px;
   max-width: 55%; 
@@ -65,7 +65,6 @@ body {
   line-height: 1.2;
 
   display: inline-block;
-  background: #f1cfc4;
   padding: 6px 12px;
   border-radius: 6px;
 }
@@ -79,7 +78,6 @@ body {
   line-height: 1.3;
 
   display: inline-block;
-  background: #f1cfc4;
   padding: 6px 12px;
   border-radius: 6px;
 }
@@ -95,7 +93,7 @@ body {
 }
 
 .manual-btn {
-    border: 2px solid #FF5F5F;
+    border: 2px solid #6FD1D7;
     padding: 5px;
     border-radius: 10px;
     cursor: pointer;
@@ -107,7 +105,7 @@ body {
 }
 
 .manual-btn:hover {
-    background: #FF5F5F;
+    background: #6FD1D7;
 }
 
 .navigation-auto {
@@ -119,7 +117,7 @@ body {
 }
 
 .navigation-auto div {
-    border: 2px solid #FF5F5F;
+    border: 2px solid #6FD1D7;
     padding: 5px;
     border-radius: 10px;
     transition: 0.1s;
@@ -130,11 +128,11 @@ body {
 }
 
 #radio1:checked ~ .navigation-auto .auto-btn1 {
-    background: #FF5F5F;
+    background: #6FD1D7;
 }
 
 #radio2:checked ~ .navigation-auto .auto-btn2 {
-    background: #FF5F5F;
+    background: #6FD1D7;
 }
 
 
@@ -143,7 +141,7 @@ body {
     position: relative;
 }
 .container h1 {
-    color: #b1193f;
+    color: #0D0B61;
     margin-top: 20px;
     display: inline-block;
 }
@@ -152,7 +150,7 @@ body {
     content: "";
     display: block;
     height: 3px;
-    background: #b1193f;
+    background: #0D0B61;
     margin: 8px auto 0; 
     border-radius: 2px;
     margin-bottom: 25px;
@@ -184,7 +182,7 @@ body {
     padding: 18px;
     border-radius: 12px;
     text-decoration: none;
-    border: 2px solid #b1193f;
+    border: 2px solid #0D0B61;
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.4);
     transition: 0.2s ease;
     width: 400px;
@@ -192,7 +190,7 @@ body {
 }
 
 .card-list .card-item .card-link:hover {
-    border-color: #FF5F5F;
+    border-color: #6FD1D7;
 }
 
 .card-list .card-link .card-image {
@@ -225,7 +223,7 @@ body {
 
 .card-list .card-link .card-info {
     font-size: 1.2rem;
-    color: #B1193F;
+    color: #0D0B61;
     font-weight: 400;
     text-align: left;
 }
@@ -239,8 +237,8 @@ body {
 
 .card-list .card-link .card-button button {
     padding: 8px 18px;
-    border: 2px solid #FF5F5F;
-    background: #FF5F5F;
+    border: 2px solid #F4B342;
+    background: #F4B342;
     color: white;
     border-radius: 10px;
     font-weight: 500;
@@ -249,7 +247,7 @@ body {
 }
 
 .card-list .card-link .card-button button:hover {
-    color: #FF5F5F;
+    color: #F4B342;
     background: white;
 }
 
@@ -260,9 +258,9 @@ body {
 
 .card-list .card-link .card-button .book-now {
     padding: 8px 16px;
-    border: 2px solid #b1193f;
+    border: 2px solid #0D0B61;
     background: white;
-    color: #b1193f;
+    color: #0D0B61;
     border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
@@ -270,7 +268,7 @@ body {
 }
 
 .card-list .card-link .card-button .book-now:hover {
-    background: #b1193f;
+    background: #0D0B61;
     color: white;
 }
 
@@ -288,7 +286,7 @@ body {
 }
 
 .card-list .card-link .card-button .dropdown-content a {
-    color: #b1193f;
+    color: #0D0B61;
     padding: 10px 15px;
     display: block;
     text-decoration: none;
@@ -296,7 +294,7 @@ body {
 }
 
 .card-list .card-link .card-button .dropdown-content a:hover {
-    background: #b1193f;
+    background: #0D0B61;
     color: white;
 }
 
@@ -316,7 +314,7 @@ body {
 }
 
 .cloned-dropdown a {
-  color: #b1193f;
+  color: #0D0B61;
   padding: 10px 15px;
   display: block;
   text-decoration: none;
@@ -324,7 +322,7 @@ body {
 }
 
 .cloned-dropdown a:hover {
-  background: #b1193f;
+  background: #0D0B61;
   color: white;
 }
 
@@ -332,7 +330,7 @@ body {
     text-align: center;
     margin: -45px 0 25px;
     font-size: 1rem;
-    color: #b1193f;
+    color: #0D0B61;
     font-weight: 500;
 }
 
@@ -349,7 +347,7 @@ body {
 
 .availability-check input {
     padding: 6px 10px;
-    border: 2px solid #b1193f;
+    border: 2px solid #0D0B61;
     border-radius: 10px;
     outline: none;
     transition: all 0.3s ease;
@@ -358,12 +356,12 @@ body {
 }
 
 .availability-check input:focus {
-    border-color: #FF5F5F;
+    border-color: #6FD1D7;
     box-shadow: 0 0 5px rgba(245, 128, 94, 0.5);
 }
 
 .availability-check .cek-btn {
-  background: linear-gradient(135deg, #b1193f, #ff5f5f);
+  background: linear-gradient(135deg, #0D0B61, #6FD1D7);
   color: #fff;
   border: none;
   padding: 6px 16px;
@@ -379,7 +377,7 @@ body {
 .availability-check .cek-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 12px rgba(255, 95, 95, 0.45);
-  background: linear-gradient(135deg, #ff5f5f, #b1193f);
+  background: linear-gradient(135deg, #6FD1D7, #0D0B61);
 }
 
 .availability-check .cek-btn:active {
@@ -397,7 +395,7 @@ body {
     height: 13px;
     width: 13px;
     opacity: 0.5;
-    background: #FF5F5F;
+    background: #6FD1D7;
 }
 
 .card-wrapper .swiper-pagination-bullet-active {
@@ -405,13 +403,13 @@ body {
 }
 
 .card-wrapper .swiper-slide-button {
-    color: #FF5F5F;
+    color: #6FD1D7;
     margin-top: -35px;
 }
 
 .swiper-button-prev,
 .swiper-button-next {
-  color: #FF5F5F;
+  color: #6FD1D7;
 }
 
 
@@ -419,7 +417,7 @@ body {
 .swiper-button-prev:hover,
 .swiper-button-next:hover {
   scale: 1.2;
-  color: #b1193f;
+  color: #0D0B61;
 }
 /* ✨ Animasi masuk dari arah tertentu */
 @keyframes fadeInTop {
@@ -533,13 +531,13 @@ body {
     cursor: pointer;
     z-index: 20;
     transition: all 0.3s ease;
-    color: #b1193f;
+    color: #0D0B61;
     background: none;
     border: none;
 }
 
 .menu-btn:hover {
-    color: #FF5F5F;
+    color: #6FD1D7;
 }
 
 .sidebar {
@@ -569,7 +567,7 @@ body {
     padding: 12px 0;
     border: none;
     background: none;
-    color: #b1193f;
+    color: #0D0B61;
     font-weight: 400;
     font-size: 1.3rem;
     cursor: pointer;
@@ -605,7 +603,7 @@ body {
 
 .panel h2 {
     font-size: 2rem;
-    color: #FF5F5F;
+    color: #6FD1D7;
     margin-bottom: 20px;
 }
 
@@ -623,7 +621,7 @@ body {
     font-size: 24px;
     background: none;
     border: none;
-    color: #FF5F5F;
+    color: #6FD1D7;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -661,7 +659,7 @@ iframe {
 
 .contact-item i {
     font-size: 1.8rem;
-    color: #FF5F5F;
+    color: #6FD1D7;
     width: 40px;
     text-align: center;
 }
@@ -672,7 +670,7 @@ iframe {
 }
 
 .contact-item a {
-    color: #FF5F5F;
+    color: #6FD1D7;
     text-decoration: none;
     font-weight: 500;
 }
@@ -683,7 +681,7 @@ iframe {
 
 #mainFooter {
   width: 100vw; 
-  background-color: #b1193f;
+  background-color: #0D0B61;
   color: #fff;
   padding: 40px 0 20px;
   font-family: "Poppins", sans-serif;

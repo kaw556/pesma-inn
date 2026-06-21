@@ -248,10 +248,9 @@ admin/report_monthly.blade.php
             <td>{{ $i+1 }}</td>
             <td><strong>{{ $b->nama }}</strong></td>
             <td>
-              <span style="padding:4px 8px;border-radius:4px;
+              <span style="padding:4px 8px;border-radius:4px;font-size:12px; font-weight:600;
                 background:{{ $b->jenis_tamu == 'Corporate' ? '#dbeafe' : '#fef3c7' }};
-                color:{{ $b->jenis_tamu == 'Corporate' ? '#1e40af' : '#92400e' }};
-                font-size:12px; font-weight:600;">
+                color:{{ $b->jenis_tamu == 'Corporate' ? '#1e40af' : '#92400e' }};">
                 {{ $b->jenis_tamu }}
               </span>
             </td>
