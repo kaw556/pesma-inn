@@ -1,418 +1,260 @@
 @extends('layout')
 
 @section('content')
-<style>
-  :root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --success: #16a34a;
-    --danger: #dc2626;
-    --warning: #f59e0b;
-    --gray: #6b7280;
-    --border: #e5e7eb;
-    --bg-light: #f9fafb;
-  }
-
-  /* UTILS */
-  .container-padding { padding: 24px; }
-  .text-muted { color: var(--gray); }
-  .text-sm { font-size: 13px; }
-  .mt-12 { margin-top: 12px; }
-  .mt-20 { margin-top: 20px; }
-  .mb-8 { margin-bottom: 8px; }
-
-  /* BUTTONS */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 14px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    text-decoration: none;
-    white-space: nowrap; /* Penting agar tidak pecah */
-  }
-
-  .btn-primary { background: var(--primary); color: #fff; }
-  .btn-primary:hover { background: var(--primary-hover); }
-
-  .btn-success { background: var(--success); color: #fff; }
-  .btn-success:hover { background: #15803d; }
-
-  .btn-danger { background: var(--danger); color: #fff; }
-  .btn-danger:hover { background: #b91c1c; }
-
-  .btn-gray { background: var(--gray); color: #fff; }
-  .btn-gray:hover { background: #4b5563; }
-
-  .btn-chat { background: #25D366; color: white; }
-  .btn-chat:hover { background: #1DA955; }
-
-  /* CARD & TABLE */
-  .card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  }
-
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 14px;
-  }
-
-  .table thead {
-    background: var(--bg-light);
-    text-align: left;
-    color: #374151;
-  }
-
-  .table th, .table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-
-  .table tbody tr:hover {
-    background: #f3f4f6;
-  }
-
-  .detail-row td {
-    background: #fafafa;
-    padding: 0 !important;
-  }
-
-  .detail-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
-    padding: 20px;
-  }
-
-  .detail-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-  }
-
-  .detail-card strong {
-    display: block;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: #111827;
-  }
-
-  .form-group {
-    margin-bottom: 15px;
-  }
-
-  select, input[type="file"] {
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-  }
-
-  select[multiple] {
-    min-height: 150px;
-    padding: 4px;
-  }
-</style>
-
-<div class="container-padding">
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+<div class="mb-8">
+  <span class="section-kicker">Data Pengunjung</span>
+  <div class="mt-2 flex flex-wrap items-end justify-between gap-4">
     <div>
-      <h2 style="font-size: 24px; font-weight: 700; color: #111827;">⏳ Konfirmasi Pembayaran & Booking</h2>
-      <p class="text-muted">Tinjau dan konfirmasi pembayaran yang masih pending. Admin dapat menghubungi PIC lewat WhatsApp.</p>
+      <h1 class="section-heading">Konfirmasi Pembayaran & Booking</h1>
+      <p class="mt-2 text-sm text-base-content/60">Tinjau booking yang masih pending, upload bukti bayar, lalu setujui dan tentukan kamar.</p>
     </div>
-    <a href="{{ route('admin.dashboard') }}" class="btn btn-gray">← Kembali</a>
+    <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost btn-sm rounded-full normal-case border border-base-300">
+      <i class="fas fa-arrow-left text-xs"></i> Kembali
+    </a>
   </div>
+</div>
 
-  @if(session('success'))
-    <div class="card mt-12" style="border-left: 4px solid var(--success); color: #166534;">
-      <strong>✓ {{ session('success') }}</strong>
-    </div>
-  @endif
+@if(session('success'))
+  <div class="alert alert-success mb-6 text-sm">{{ session('success') }}</div>
+@endif
 
-  @if($errors->any())
-    <div class="card mt-12" style="border-left: 4px solid var(--danger); color: #991b1b;">
-      <strong>✗ Terjadi Kesalahan:</strong>
-      <ul style="margin-left: 20px; margin-top: 6px;">
-        @foreach($errors->all() as $error)
-          <li>{{ $error }}</li>
-        @endforeach
-      </ul>
-    </div>
-  @endif
+@if($errors->any())
+  <div class="alert alert-error mb-6 text-sm">
+    <ul class="list-disc pl-5">
+      @foreach($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </div>
+@endif
 
-  <div class="card mt-20" style="padding:0">
-    <table class="table">
-      <thead>
+<section class="soft-card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="table w-full">
+      <thead class="bg-primary/5 text-primary">
         <tr>
-          <th>#</th>
-          <th>Nama / Jenis</th>
-          <th>No. Identitas / PIC</th>
-          <th>Tanggal Booking</th>
-          <th>Jml Kamar</th>
-          <th>Status</th>
-          <th style="width:250px;">Aksi</th>
+          <th class="text-[11px] uppercase tracking-wider">#</th>
+          <th class="text-[11px] uppercase tracking-wider">Nama / Jenis</th>
+          <th class="text-[11px] uppercase tracking-wider">Identitas / PIC</th>
+          <th class="text-[11px] uppercase tracking-wider">Tanggal Booking</th>
+          <th class="text-[11px] uppercase tracking-wider">Jml Kamar</th>
+          <th class="text-[11px] uppercase tracking-wider">Status</th>
+          <th class="text-[11px] uppercase tracking-wider">Aksi</th>
         </tr>
       </thead>
       <tbody>
-        @forelse($pengunjungs as $p)
-        <tr>
-          <td>{{ $loop->iteration }}</td>
-          <td>
-            @if(strtolower($p->jenis_tamu) == 'corporate')
-              <strong>{{ $p->nama_pic ?? 'PIC' }}</strong>
-              @if($p->nama)
-                <br><span class=\"text-sm text-muted\">{{ $p->nama }}</span>
-              @endif
-            @else
-              <strong>{{ $p->nama }}</strong>
-            @endif
-            <br><span style=\"background:{{ strtolower($p->jenis_tamu) == 'corporate' ? '#28a745' : '#007bff' }};color:#fff;padding:2px 8px;border-radius:10px;font-size:11px\">{{ ucfirst($p->jenis_tamu) }}</span>
-          </td>
-          <td>
-            @if(strtolower($p->jenis_tamu) == 'corporate')
-              <span class=\"text-sm\">{{ $p->no_telp_pic }}</span>
-            @else
-              {{ $p->no_identitas }}
-            @endif
-          </td>
-          <td>{{ $p->check_in }} → {{ $p->check_out }}</td>
-          <td>{{ $p->jumlah_kamar ?? '-' }}</td>
-          <td><span style="font-weight:600; color:var(--warning);">{{ $p->payment_status_label }}</span></td>
-          <td>
-            @php
-              $phone = preg_replace('/[^0-9+]/','',$p->no_telp_pic ?? '');
-              $wa = $phone ? 'https://wa.me/'.ltrim($phone,'0') : null;
-            @endphp
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              @if($wa)
-                <a href="{{ $wa }}" target="_blank" class="btn btn-chat" style="padding:6px 12px;">Chat</a>
-              @endif
-              <form action="{{ route('pengunjung.reject', $p->id) }}" method="POST" class="reject-form">
-                @csrf
-                <button class="btn btn-danger" type="submit" style="padding:6px 12px;">Tolak</button>
-              </form>
-              <form action="{{ route('pengunjung.approve', $p->id) }}" method="POST" class="approve-form">
-                @csrf
-                <button class="btn btn-primary" type="submit" style="padding:6px 12px;">Konfirmasi</button>
-              </form>
-            </div>
-          </td>
-        </tr>
+        @forelse($pengunjungs as $guest)
+          @php
+            $phone = preg_replace('/[^0-9+]/', '', $guest->no_telp_pic ?? '');
+            $wa = $phone ? 'https://wa.me/' . ltrim($phone, '0') : null;
+            $proofUrl = $guest->bukti_pembayaran ? \Illuminate\Support\Facades\Storage::url($guest->bukti_pembayaran) : null;
+            $isPdf = $guest->bukti_pembayaran && strtolower(pathinfo($guest->bukti_pembayaran, PATHINFO_EXTENSION)) === 'pdf';
+          @endphp
 
-        <tr class="detail-row">
-          <td colspan="7">
-            <div class="detail-section">
-              <div class="detail-card">
-                <strong>Detail Booking</strong>
-                <div class="text-sm">
-                  <p><b>Nama:</b> {{ $p->nama }}</p>
-                  <p><b>Jenis Tamu:</b> {{ $p->jenis_tamu }}</p>
-                  @if(strtolower($p->jenis_tamu) == 'corporate')
-                    <p><b>Nama Kegiatan:</b> {{ $p->nama_kegiatan ?? '-' }}</p>
-                    <p><b>PIC:</b> {{ $p->nama_pic ?? '-' }} ({{ $p->no_telp_pic ?? '-' }})</p>
-                  @else
-                    <p><b>No Identitas:</b> {{ $p->no_identitas }}</p>
-                    <p><b>No Telp:</b> {{ $p->no_telp }}</p>
-                  @endif
-                  <p><b>Check-in:</b> {{ $p->check_in }}</p>
-                  <p><b>Check-out:</b> {{ $p->check_out }}</p>
-                  <p><b>Jumlah Kamar:</b> {{ $p->jumlah_kamar ?? '-' }}</p>
-                  <p><b>Kamar Assigned:</b> {{ $p->kode_kamar ?? 'Belum di-assign' }}</p>
-                </div>
-              </div>
-
-              <div class="detail-card">
-                <strong>Upload Bukti Manual</strong>
-                @if($p->bukti_pembayaran)
-                  @php
-                    // Path di DB: public/bukti_pembayaran/xxx.png
-                    // Storage::url() akan convert ke: /storage/bukti_pembayaran/xxx.png
-                    $fileUrl = \Illuminate\Support\Facades\Storage::url($p->bukti_pembayaran);
-                    $isPdf = strtolower(pathinfo($p->bukti_pembayaran, PATHINFO_EXTENSION)) === 'pdf';
-                  @endphp
-                  <div style="margin-bottom:16px;padding:12px;background:#f0fdf4;border:2px solid #86efac;border-radius:8px">
-                    <p class="text-sm" style="color:#059669;margin-bottom:12px;font-weight:700;font-size:14px">✓ File Bukti Pembayaran Sudah Tersimpan</p>
-                    
-                    @if(!$isPdf)
-                      <div style="margin-bottom:12px;text-align:center;background:#fff;padding:8px;border-radius:6px">
-                        <img src="{{ $fileUrl }}" alt="Bukti Pembayaran" onerror="this.parentElement.innerHTML='<div style=padding:20px;color:#6b7280>Gambar tidak dapat dimuat atau tidak tersedia. Pastikan <span style=font-weight:bold>php artisan storage:link</span> sudah dijalankan.</div>'" style="max-width:100%;height:auto;max-height:180px;border-radius:4px;border:1px solid #d1d5db">
-                      </div>
-                    @else
-                      <div style="margin-bottom:12px;text-align:center;background:#fff;padding:20px;border-radius:6px;border:1px solid #d1d5db">
-                        <div style="font-size:40px;margin-bottom:8px">📄</div>
-                        <p style="font-size:12px;color:#6b7280">File PDF</p>
-                      </div>
-                    @endif
-                    
-                    <a href="{{ $fileUrl }}" target="_blank" class="btn btn-primary" style="display:block;width:100%;margin-top:0;">
-                      @if($isPdf)
-                        📄 Lihat Bukti PDF
-                      @else
-                        🖼️ Lihat Bukti Pembayaran
-                      @endif
-                    </a>
-                  </div>
+          <tr class="hover:bg-base-200/50">
+            <td class="text-xs text-base-content/50">{{ $loop->iteration }}</td>
+            <td>
+              @if(strtolower($guest->jenis_tamu) == 'corporate')
+                <span class="text-sm font-semibold">{{ $guest->nama_pic ?? 'PIC' }}</span>
+                @if($guest->nama)
+                  <span class="mt-0.5 block text-xs text-base-content/50">{{ $guest->nama }}</span>
                 @endif
-                
-                <form action="{{ route('pengunjung.upload_payment', $p->id) }}" method="POST" enctype="multipart/form-data" style="margin-top:12px">
+              @else
+                <span class="text-sm font-medium">{{ $guest->nama }}</span>
+              @endif
+              <span class="mt-1 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium {{ strtolower($guest->jenis_tamu) == 'corporate' ? 'bg-success/10 text-success' : 'bg-info/10 text-info' }}">
+                {{ ucfirst($guest->jenis_tamu) }}
+              </span>
+            </td>
+            <td class="text-xs">{{ strtolower($guest->jenis_tamu) == 'corporate' ? ($guest->no_telp_pic ?? '-') : ($guest->no_identitas ?? '-') }}</td>
+            <td class="text-xs">{{ $guest->check_in }} → {{ $guest->check_out }}</td>
+            <td class="text-sm font-medium">{{ $guest->jumlah_kamar ?? '-' }}</td>
+            <td>
+              <span class="inline-flex rounded-full bg-warning/15 px-3 py-1 text-xs font-medium text-warning">{{ $guest->payment_status_label }}</span>
+            </td>
+            <td>
+              <div class="flex flex-wrap gap-2">
+                @if($wa)
+                  <a href="{{ $wa }}" target="_blank" rel="noopener" class="btn btn-ghost btn-xs rounded-full normal-case text-[#25D366] hover:bg-[#25D366]/10" aria-label="Chat WhatsApp">
+                    <i class="fab fa-whatsapp text-sm"></i>
+                  </a>
+                @endif
+                <form action="{{ route('pengunjung.reject', $guest->id) }}" method="POST" class="reject-form">
                   @csrf
-                  <div class="form-group">
-                    <label for="bukti_file_{{ $p->id }}" style="display:block;margin-bottom:6px;font-size:13px;color:#374151;font-weight:500">
-                      {{ $p->bukti_pembayaran ? 'Ganti dengan file baru:' : 'Pilih file bukti pembayaran:' }}
-                    </label>
-                    <input 
-                      type="file" 
-                      name="bukti_pembayaran" 
-                      id="bukti_file_{{ $p->id }}" 
-                      accept=".jpg,.jpeg,.png,.pdf" 
-                      required 
-                      style="font-size:13px;padding:8px;border:1px solid #d1d5db;border-radius:6px;width:100%"
-                      onchange="previewFile({{ $p->id }})"
-                    >
-                    <p class="text-sm text-muted" style="margin-top:6px;font-size:12px">Format: JPG, PNG, PDF (Max 5MB)</p>
-                    
-                    <div id="preview_{{ $p->id }}" style="display:none;margin-top:12px;padding:10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px">
-                      <p style="font-size:12px;color:#6b7280;margin-bottom:8px">Preview:</p>
-                      <img id="preview_img_{{ $p->id }}" style="max-width:100%;height:auto;max-height:150px;border-radius:4px;display:none">
-                      <p id="preview_pdf_{{ $p->id }}" style="display:none;padding:20px;background:#fff;border:1px solid #d1d5db;border-radius:4px;text-align:center">
-                        <span style="font-size:30px;display:block;margin-bottom:4px">📄</span>
-                        <span id="preview_filename_{{ $p->id }}" class="text-sm"></span>
-                      </p>
-                    </div>
-                  </div>
-                  <button class="btn btn-primary" type="submit" style="margin-top:8px;padding:8px 16px">
-                    {{ $p->bukti_pembayaran ? '🔄 Ganti File' : '📤 Upload File' }}
-                  </button>
+                  <button type="submit" class="btn btn-error btn-xs rounded-full normal-case">Tolak</button>
+                </form>
+                <form action="{{ route('pengunjung.approve', $guest->id) }}" method="POST" class="approve-form">
+                  @csrf
+                  <button type="submit" class="btn btn-primary btn-xs rounded-full normal-case">Konfirmasi</button>
                 </form>
               </div>
+            </td>
+          </tr>
 
-              <div class="detail-card">
-                <strong>Approve & Assign Kamar</strong>
-                <form action="{{ route('pengunjung.approve', $p->id) }}" method="POST">
-                  @csrf
-                  <div class="form-group">
-                    <label for="assign_kamar_select_{{ $p->id }}" style="display:block;margin-bottom:6px;font-size:13px;color:#374151;font-weight:500">Pilih kamar (Ctrl/Shift untuk multi-select):</label>
-                    <select name="assign_kamar[]" id="assign_kamar_select_{{ $p->id }}" multiple style="min-height: 150px;">
-                      @foreach($availableRooms as $k)
-                        <option value="{{ $k->kode_kamar ?? $k->nomor_kamar }}">
-                          {{ $k->kode_kamar ?? $k->nomor_kamar }} — {{ $k->jenis_kamar }} — {{ $k->gedung }}
+          <tr class="detail-row">
+            <td colspan="7" class="bg-base-200/40 p-5">
+              <div class="grid gap-5 lg:grid-cols-3">
+                <div class="rounded-2xl border border-base-200 bg-base-100 p-5">
+                  <h3 class="text-xs font-semibold uppercase tracking-wider text-secondary">Detail Booking</h3>
+                  <dl class="mt-3 space-y-2 text-sm">
+                    <div class="flex justify-between gap-3"><dt class="text-base-content/60">Nama</dt><dd class="text-right font-medium">{{ $guest->nama }}</dd></div>
+                    <div class="flex justify-between gap-3"><dt class="text-base-content/60">Jenis Tamu</dt><dd class="text-right font-medium">{{ $guest->jenis_tamu }}</dd></div>
+                    @if(strtolower($guest->jenis_tamu) == 'corporate')
+                      <div class="flex justify-between gap-3"><dt class="text-base-content/60">Kegiatan</dt><dd class="text-right font-medium">{{ $guest->nama_kegiatan ?? '-' }}</dd></div>
+                      <div class="flex justify-between gap-3"><dt class="text-base-content/60">PIC</dt><dd class="text-right font-medium">{{ $guest->nama_pic ?? '-' }} ({{ $guest->no_telp_pic ?? '-' }})</dd></div>
+                    @else
+                      <div class="flex justify-between gap-3"><dt class="text-base-content/60">No Identitas</dt><dd class="text-right font-medium">{{ $guest->no_identitas }}</dd></div>
+                      <div class="flex justify-between gap-3"><dt class="text-base-content/60">No Telp</dt><dd class="text-right font-medium">{{ $guest->no_telp }}</dd></div>
+                    @endif
+                    <div class="flex justify-between gap-3"><dt class="text-base-content/60">Check-in</dt><dd class="text-right font-medium">{{ $guest->check_in }}</dd></div>
+                    <div class="flex justify-between gap-3"><dt class="text-base-content/60">Check-out</dt><dd class="text-right font-medium">{{ $guest->check_out }}</dd></div>
+                    <div class="flex justify-between gap-3"><dt class="text-base-content/60">Jml Kamar</dt><dd class="text-right font-medium">{{ $guest->jumlah_kamar ?? '-' }}</dd></div>
+                    <div class="flex justify-between gap-3"><dt class="text-base-content/60">Kamar</dt><dd class="text-right font-medium">{{ $guest->kode_kamar ?? 'Belum di-assign' }}</dd></div>
+                  </dl>
+                </div>
+
+                <div class="rounded-2xl border border-base-200 bg-base-100 p-5">
+                  <h3 class="text-xs font-semibold uppercase tracking-wider text-secondary">Upload Bukti Manual</h3>
+
+                  @if($guest->bukti_pembayaran)
+                    <div class="mt-3 rounded-xl border border-success/30 bg-success/5 p-4">
+                      <p class="text-xs font-semibold text-success">✓ Bukti pembayaran tersimpan</p>
+                      <div class="mt-3 flex justify-center rounded-lg bg-base-100 p-3">
+                        @if($isPdf)
+                          <div class="text-center text-base-content/50">
+                            <i class="fas fa-file-pdf text-3xl"></i>
+                            <p class="mt-1 text-xs">File PDF</p>
+                          </div>
+                        @else
+                          <img src="{{ $proofUrl }}" alt="Bukti Pembayaran" class="max-h-44 rounded-lg object-contain" onerror="this.style.display='none'">
+                        @endif
+                      </div>
+                      <a href="{{ $proofUrl }}" target="_blank" rel="noopener" class="btn btn-ghost btn-xs mt-3 w-full rounded-full normal-case text-secondary">
+                        <i class="fas fa-up-right-from-square text-[10px]"></i> Lihat bukti
+                      </a>
+                    </div>
+                  @endif
+
+                  <form action="{{ route('pengunjung.upload_payment', $guest->id) }}" method="POST" enctype="multipart/form-data" class="mt-4 space-y-3">
+                    @csrf
+                    <label for="bukti_file_{{ $guest->id }}" class="mb-1.5 block text-xs font-medium text-base-content/70">
+                      {{ $guest->bukti_pembayaran ? 'Ganti dengan file baru:' : 'Pilih file bukti pembayaran:' }}
+                    </label>
+                    <input type="file" name="bukti_pembayaran" id="bukti_file_{{ $guest->id }}" accept=".jpg,.jpeg,.png,.pdf" required class="file-input file-input-bordered w-full" onchange="previewFile({{ $guest->id }})">
+                    <p class="text-[11px] text-base-content/50">Format: JPG, PNG, PDF (maks. 5MB).</p>
+
+                    <div id="preview_{{ $guest->id }}" class="hidden rounded-xl border border-base-200 bg-base-200/50 p-3">
+                      <p class="mb-2 text-[11px] text-base-content/50">Preview</p>
+                      <img id="preview_img_{{ $guest->id }}" class="mx-auto max-h-36 rounded-lg object-contain" alt="Preview bukti">
+                      <p id="preview_pdf_{{ $guest->id }}" class="hidden text-center text-xs text-base-content/60">
+                        <i class="fas fa-file-pdf text-2xl"></i>
+                        <span id="preview_filename_{{ $guest->id }}" class="mt-1 block"></span>
+                      </p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm rounded-full normal-case">
+                      {{ $guest->bukti_pembayaran ? 'Ganti File' : 'Upload File' }}
+                    </button>
+                  </form>
+                </div>
+
+                <div class="rounded-2xl border border-base-200 bg-base-100 p-5">
+                  <h3 class="text-xs font-semibold uppercase tracking-wider text-secondary">Approve & Assign Kamar</h3>
+                  <form action="{{ route('pengunjung.approve', $guest->id) }}" method="POST" class="mt-3 space-y-3">
+                    @csrf
+                    <label for="assign_kamar_select_{{ $guest->id }}" class="mb-1.5 block text-xs font-medium text-base-content/70">Pilih kamar (Ctrl/Shift untuk multi-select)</label>
+                    <select name="assign_kamar[]" id="assign_kamar_select_{{ $guest->id }}" multiple class="select select-bordered h-auto min-h-36 w-full py-2">
+                      @foreach($availableRooms as $room)
+                        <option value="{{ $room->kode_kamar ?? $room->nomor_kamar }}">
+                          {{ $room->kode_kamar ?? $room->nomor_kamar }} — {{ $room->jenis_kamar }} — {{ $room->gedung }}
                         </option>
                       @endforeach
                     </select>
-                    <p class="text-sm text-muted mt-12">{{ $availableRooms->count() }} kamar tersedia</p>
-                  </div>
-                  <button class="btn btn-success" type="submit">Approve & Assign</button>
-                </form>
+                    <p class="text-[11px] text-base-content/50">{{ $availableRooms->count() }} kamar tersedia.</p>
+                    <button type="submit" class="btn btn-success btn-sm rounded-full normal-case">Approve & Assign</button>
+                  </form>
+                </div>
               </div>
-            </div>
-          </td>
-        </tr>
+            </td>
+          </tr>
         @empty
-        <tr><td colspan="7" style="text-align:center; padding:20px;">🎉 Semua booking sudah terkonfirmasi.</td></tr>
+          <tr>
+            <td colspan="7" class="py-12 text-center text-sm text-base-content/50">Semua booking sudah terkonfirmasi.</td>
+          </tr>
         @endforelse
       </tbody>
     </table>
   </div>
-</div>
+</section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Handle approve confirmation
-  document.querySelectorAll('.approve-form').forEach(form => {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.approve-form').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
       Swal.fire({
-        title: '✅ Konfirmasi Pembayaran?',
-        text: 'Booking akan disetujui dan kamar akan di-assign',
+        title: 'Konfirmasi Pembayaran?',
+        text: 'Booking akan disetujui dan kamar akan di-assign.',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#2563eb',
-        cancelButtonColor: '#6c757d',
+        confirmButtonColor: '#0d0b61',
+        cancelButtonColor: '#64748b',
         confirmButtonText: 'Ya, Konfirmasi!',
-        cancelButtonText: '✗ Batal',
-        reverseButtons: true
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
       }).then((result) => {
-        if (result.isConfirmed) {
-          form.submit();
-        }
+        if (result.isConfirmed) form.submit();
       });
     });
   });
 
-  // Handle reject confirmation
-  document.querySelectorAll('.reject-form').forEach(form => {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
+  document.querySelectorAll('.reject-form').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
       Swal.fire({
         title: 'Tolak Booking?',
-        text: 'Booking akan ditolak permanen',
+        text: 'Booking akan ditolak permanen.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc2626',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: '✗ Ya, Tolak!',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Tolak!',
         cancelButtonText: 'Batal',
-        reverseButtons: true
+        reverseButtons: true,
       }).then((result) => {
-        if (result.isConfirmed) {
-          form.submit();
-        }
+        if (result.isConfirmed) form.submit();
       });
     });
   });
 });
 
 function previewFile(id) {
-  const fileInput = document.getElementById('bukti_file_' + id);
-  const previewContainer = document.getElementById('preview_' + id);
-  const previewImg = document.getElementById('preview_img_' + id);
-  const previewPdf = document.getElementById('preview_pdf_' + id);
-  const previewFilename = document.getElementById('preview_filename_' + id);
-  
-  const file = fileInput.files[0];
-  
-  // Sembunyikan semua preview secara default
-  previewContainer.style.display = 'none';
-  previewImg.style.display = 'none';
-  previewPdf.style.display = 'none';
+  const input = document.getElementById('bukti_file_' + id);
+  const container = document.getElementById('preview_' + id);
+  const image = document.getElementById('preview_img_' + id);
+  const pdf = document.getElementById('preview_pdf_' + id);
+  const filename = document.getElementById('preview_filename_' + id);
 
-  if (file) {
-    // Tampilkan container preview
-    previewContainer.style.display = 'block';
-    
-    const fileType = file.type;
-    const fileName = file.name;
-    
-    if (fileType.startsWith('image/')) {
-      // Tampilkan preview gambar
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        previewImg.src = e.target.result;
-        previewImg.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    } else if (fileType === 'application/pdf') {
-      // Tampilkan info PDF
-      previewPdf.style.display = 'block';
-      previewFilename.textContent = fileName;
-    }
+  image.style.display = 'none';
+  pdf.classList.add('hidden');
+  container.classList.add('hidden');
+
+  const file = input.files[0];
+  if (!file) return;
+
+  container.classList.remove('hidden');
+
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      image.src = event.target.result;
+      image.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else if (file.type === 'application/pdf') {
+    pdf.classList.remove('hidden');
+    filename.textContent = file.name;
   }
 }
 </script>
-
 @endsection

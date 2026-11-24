@@ -10,7 +10,7 @@
     .meta{font-size:11px;color:#555}
     table{width:100%;border-collapse:collapse;margin-top:12px}
     th,td{border:1px solid #ddd;padding:8px;text-align:left}
-    th{background:#f5d7de;color:#7b1a2e}
+    th{background:#e2e8f0;color:#0d0b61}
   </style>
 </head>
 <body>

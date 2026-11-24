@@ -1,150 +1,129 @@
 @extends('layout')
 
 @section('content')
-<style>
-  .stat-card{
-    background:rgba(179,18,59,.35);
-    color:#fff;
-    border-radius:28px;
-    padding:32px 20px;
-    text-align:center;
-    box-shadow:0 12px 30px rgba(179,18,59,.15);
-    backdrop-filter:blur(2px);
-  }
-  .stat-icon{
-    width:72px;
-    height:72px;
-    border-radius:20px;
-    background:rgba(255,255,255,.25);
-    margin:0 auto 14px;
-    display:grid;
-    place-items:center;
-  }
-  .stat-value{
-    font-size:32px;
-    font-weight:800;
-    letter-spacing:.3px;
-    margin-bottom:6px;
-  }
-  .stat-label{
-    opacity:.95;
-    font-weight:500;
-    font-size:15px;
-  }
-</style>
+<div class="mb-8">
+  <span class="section-kicker">Ringkasan</span>
+  <h1 class="section-heading mt-2">Dashboard</h1>
+  <p class="mt-2 max-w-2xl text-sm leading-relaxed text-base-content/60">
+    Pantau ketersediaan kamar, jumlah tamu, dan aktivitas pemesanan Pesma Inn hari ini.
+  </p>
+</div>
 
-<div class="text-center pt-6">
-  <p class="text-sm text-gray-600 max-w-5xl mx-auto mb-4">Ringkasan cepat hari ini — angka-angka di bawah menunjukkan kondisi saat ini: jumlah peserta (total orang), check-in yang terjadi hari ini, dan rasio keterisian kamar.</p>
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-    
-    <!-- Kamar Tersedia -->
-    <div class="stat-card">
-      <div class="stat-icon">
-        <img src="{{ asset('img/chart.png') }}" alt="Chart" class="w-9 h-9">
-      </div>
-      <div class="stat-value">{{ $kamarKosong }}</div>
-      <div class="stat-label">Kamar tersedia
-        <div style="font-size:12px;opacity:.9">Total kamar kosong saat ini</div>
-      </div>
-    </div>
+@php
+  $stats = [
+    ['label' => 'Kamar tersedia', 'value' => $kamarKosong, 'hint' => 'Total kamar kosong saat ini.', 'icon' => 'fa-door-open'],
+    ['label' => 'Kamar terisi', 'value' => $kamarTerisi, 'hint' => 'Kamar yang sedang ditempati tamu.', 'icon' => 'fa-bed', 'progress' => $occupancyRate],
+    ['label' => 'Pengunjung hari ini', 'value' => number_format($jumlahPengunjung ?? 0), 'hint' => 'Total peserta dari seluruh booking aktif.', 'icon' => 'fa-users'],
+    ['label' => 'Check-in hari ini', 'value' => number_format($checkinHariIni ?? 0), 'hint' => 'Peserta yang sudah melakukan check-in hari ini.', 'icon' => 'fa-calendar-check'],
+  ];
+@endphp
 
-    <!-- Kamar Terisi -->
-    <div class="stat-card" style="background:rgba(179,18,59,.45)">
-      <div class="stat-icon">
-        <img src="{{ asset('img/chart.png') }}" alt="Chart" class="w-9 h-9">
-      </div>
-      <div class="stat-value">{{ $kamarTerisi }}</div>
-      <div class="stat-label">Kamar terisi</div>
-      <div style="margin-top:10px">
-        <div style="background:#f3f4f6;border-radius:12px;height:12px;max-width:170px;margin:6px auto 4px;overflow:hidden">
-          <div style="width:{{ $occupancyRate }}%;background:rgba(255,255,255,0.9);height:12px"></div>
+<div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+  @foreach($stats as $stat)
+    <article class="soft-card p-6">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50">{{ $stat['label'] }}</p>
+          <p class="mt-3 text-3xl font-semibold tracking-tight text-primary">{{ $stat['value'] }}</p>
         </div>
-        <div style="font-size:12px;opacity:.95">Occupancy: <strong>{{ $occupancyRate }}%</strong></div>
+        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary/10 text-secondary">
+          <i class="fas {{ $stat['icon'] }}"></i>
+        </span>
       </div>
-    </div>
 
-    <!-- Jumlah Pengunjung (hari ini) -->
-    <div class="stat-card" style="background:rgba(179,18,59,.5)">
-      <div class="stat-icon">
-        <img src="{{ asset('img/chart.png') }}" alt="Chart" class="w-9 h-9">
-      </div>
-      <div class="stat-value">{{ number_format($jumlahPengunjung ?? 0) }}</div>
-      <div class="stat-label">Jumlah pengunjung (hari ini)
-        <div style="font-size:12px;opacity:.9">Total peserta dari semua booking aktif hari ini <span title="Jumlah peserta = nilai field jumlah_peserta pada masing-masing booking">ℹ️</span></div>
-      </div>
-    </div>
-    
-    <!-- Check-ins Hari Ini -->
-    <div class="stat-card" style="background:rgba(179,18,59,.4)">
-      <div class="stat-icon">
-        <img src="{{ asset('img/chart.png') }}" alt="Chart" class="w-9 h-9">
-      </div>
-      <div class="stat-value">{{ number_format($checkinHariIni ?? 0) }}</div>
-      <div class="stat-label">Check-ins (hari ini)
-        <div style="font-size:12px;opacity:.9">Peserta yang melakukan check-in hari ini <span title="Angka ini menghitung peserta pada pengunjung yang statusnya sudah check-in hari ini">ℹ️</span></div>
-      </div>
-    </div>
-    
-  </div>
+      <p class="mt-3 text-xs leading-relaxed text-base-content/60">{{ $stat['hint'] }}</p>
 
-  <!-- Quick Access Buttons -->
-  <div class="mt-6 flex flex-wrap gap-3 justify-center">
-    <a href="{{ route('kamar.index') }}" class="px-6 py-3 bg-purple-500 text-white rounded-lg font-semibold hover:bg-purple-600 transition shadow-lg">
-      Data Kamar
-    </a>
-    <a href="{{ route('pengunjung.index') }}" class="px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition shadow-lg">
-      Data Pengunjung
-    </a>
-    <a href="{{ route('pembayaran.konfirmasi') }}" class="px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition shadow-lg">
-      Pembayaran
-    </a>
-    <a href="{{ route('report.monthly') }}" class="px-6 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition shadow-lg">
-      Report
-    </a>
+      @if(isset($stat['progress']))
+        <div class="mt-4 h-1.5 overflow-hidden rounded-full bg-base-200">
+          <div class="h-full rounded-full bg-secondary" style="width: {{ $stat['progress'] }}%"></div>
+        </div>
+        <p class="mt-2 text-[11px] font-medium text-secondary">Occupancy {{ $stat['progress'] }}%</p>
+      @endif
+    </article>
+  @endforeach
+</div>
+
+<div class="mt-10">
+  <span class="section-kicker">Akses cepat</span>
+  <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    @php
+      $shortcuts = [
+        ['label' => 'Data Kamar', 'url' => route('kamar.index'), 'icon' => 'fa-bed'],
+        ['label' => 'Data Pengunjung', 'url' => route('pengunjung.index'), 'icon' => 'fa-users'],
+        ['label' => 'Pembayaran', 'url' => route('pembayaran.konfirmasi'), 'icon' => 'fa-receipt'],
+        ['label' => 'Report', 'url' => route('report.monthly'), 'icon' => 'fa-chart-simple'],
+      ];
+    @endphp
+
+    @foreach($shortcuts as $shortcut)
+      <a href="{{ $shortcut['url'] }}" class="soft-card group flex items-center justify-between gap-3 p-5 transition hover:border-secondary hover:shadow-md">
+        <span class="flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/5 text-primary">
+            <i class="fas {{ $shortcut['icon'] }}"></i>
+          </span>
+          <span class="text-sm font-semibold">{{ $shortcut['label'] }}</span>
+        </span>
+        <i class="fas fa-arrow-right text-xs text-base-content/30 transition group-hover:translate-x-1 group-hover:text-secondary"></i>
+      </a>
+    @endforeach
   </div>
 </div>
- 
-<!-- Recent activity -->
-<div class="max-w-5xl mx-auto mt-6">
-  <div class="bg-white rounded-2xl p-4 shadow flex flex-col md:flex-row gap-4">
-    <div class="flex-1">
-      <h4 class="text-sm font-bold text-[var(--brand)] mb-2">Recent Activity</h4>
-      <ul class="divide-y">
-        @forelse($recentBookings as $b)
-        <li class="py-2">
-          <div class="text-sm font-medium">
-            @if(strtolower($b->jenis_tamu) == 'corporate')
-              {{ $b->nama_pic ?? 'PIC' }} <span class="text-xs text-gray-500">({{ $b->nama }})</span>
-            @else
-              {{ $b->nama }}
-            @endif
+
+<div class="mt-10 grid gap-5 lg:grid-cols-3">
+  <section class="soft-card p-6 lg:col-span-2">
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-sm font-semibold text-primary">Aktivitas terbaru</h2>
+      <span class="text-[11px] text-base-content/50">Pemesanan masuk</span>
+    </div>
+
+    <ul class="mt-4 divide-y divide-base-200">
+      @forelse($recentBookings as $booking)
+        <li class="flex items-center justify-between gap-4 py-3">
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium">
+              @if(strtolower($booking->jenis_tamu) == 'corporate')
+                {{ $booking->nama_pic ?? 'PIC' }} <span class="font-normal text-base-content/50">({{ $booking->nama }})</span>
+              @else
+                {{ $booking->nama }}
+              @endif
+            </p>
+            <p class="mt-0.5 truncate text-xs text-base-content/50">
+              {{ $booking->kode_kamar ?? '-' }} · {{ \Illuminate\Support\Carbon::parse($booking->created_at)->format('d M Y H:i') }}
+            </p>
           </div>
-          <div class="text-xs text-gray-500">Booked: {{ $b->kode_kamar ?? '-' }} — {{ \Illuminate\Support\Carbon::parse($b->created_at)->format('d M Y H:i') }}</div>
+          <span class="shrink-0 rounded-full bg-secondary/10 px-3 py-1 text-[11px] font-medium text-secondary">Booking</span>
         </li>
-        @empty
-        <li class="py-2 text-sm text-gray-500">No recent activity.</li>
-        @endforelse
-      </ul>
+      @empty
+        <li class="py-6 text-center text-sm text-base-content/50">Belum ada aktivitas pemesanan.</li>
+      @endforelse
+    </ul>
+  </section>
+
+  <section class="soft-card p-6">
+    <h2 class="text-sm font-semibold text-primary">Hari ini & mendatang</h2>
+
+    <div class="mt-4 flex items-center justify-between rounded-xl bg-secondary/10 px-4 py-3">
+      <span class="text-xs font-medium text-base-content/70">Check-in hari ini</span>
+      <span class="text-lg font-semibold text-primary">{{ $todayCheckins->count() }}</span>
     </div>
-    <div class="w-64">
-      <h4 class="text-sm font-bold text-[var(--brand)] mb-2">Today / Upcoming</h4>
-      <div class="text-sm">Check-ins today: <span class="font-semibold">{{ $todayCheckins->count() }}</span></div>
-      <div class="mt-3 text-sm font-medium">Upcoming Check-outs</div>
-      <ul class="mt-2 text-sm text-gray-700">
-        @forelse($upcomingCheckouts as $u)
-        <li class="py-1">
-          @if(strtolower($u->jenis_tamu) == 'corporate')
-            {{ $u->nama_pic ?? 'PIC' }}
-          @else
-            {{ $u->nama }}
-          @endif
-          — {{ $u->check_out }}
+
+    <h3 class="mt-6 text-xs font-semibold uppercase tracking-wider text-base-content/50">Check-out mendatang</h3>
+    <ul class="mt-3 divide-y divide-base-200">
+      @forelse($upcomingCheckouts as $guest)
+        <li class="py-2.5 text-sm">
+          <p class="font-medium">
+            @if(strtolower($guest->jenis_tamu) == 'corporate')
+              {{ $guest->nama_pic ?? 'PIC' }}
+            @else
+              {{ $guest->nama }}
+            @endif
+          </p>
+          <p class="mt-0.5 text-xs text-base-content/50">{{ $guest->check_out }}</p>
         </li>
-        @empty
-        <li class="text-gray-500 py-1">None</li>
-        @endforelse
-      </ul>
-    </div>
-  </div>
+      @empty
+        <li class="py-4 text-sm text-base-content/50">Tidak ada check-out mendatang.</li>
+      @endforelse
+    </ul>
+  </section>
 </div>
 @endsection

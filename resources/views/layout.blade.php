@@ -3,72 +3,47 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Penginapan</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- SweetAlert2 CDN -->
+  <title>Admin · Pesma Inn</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    :root{
-      --brand:#b3123b;
-      --brand-2:#d23b57;
-      --soft:#efb09b;
-    }
-    .blob{
-      position:absolute;
-      border-radius:42% 58% 57% 43% / 52% 33% 67% 48%;
-      background:var(--soft);
-      opacity:.6;
-      filter:saturate(110%);
-    }
-    .blob.b1{left:-6%; top:8%; width:80%; height:52%; transform:rotate(-6deg); opacity:.55;}
-    .blob.b2{right:-12%; top:6%; width:65%; height:45%; background:#ebb0c0; opacity:.55; filter:contrast(105%);} 
-    .blob.b3{left:8%; bottom:-8%; width:72%; height:42%; background:#f0a080; opacity:.6;}
-  </style>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-white">
+<body class="min-h-screen bg-base-200/50 font-sans text-base-content antialiased">
 
-  <!-- Header -->
-  <div class="pt-6 px-6">
-    <header class="bg-[var(--brand)] text-white rounded-t-2xl rounded-b-[28px] px-6 py-5 shadow-lg relative overflow-hidden">
-      <div class="flex items-center justify-between">
-        
-        <!-- Brand -->
-        <div class="flex items-center gap-3">
-          <a href="{{ route('admin.dashboard') }}">
-            <img src="{{ asset('img/logo-pesma.png') }}" alt="Logo" class="w-auto h-10 rounded-full">
-          </a>
-        </div>
+  <header class="sticky top-0 z-30 bg-primary text-primary-content shadow-sm">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4 lg:px-8">
+      <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
+        <img src="{{ asset('img/logo-resmi-pesma.png') }}" alt="Logo Pesma" class="footer-logo h-10 w-10 object-contain">
+        <span class="leading-tight">
+          <span class="block text-base font-semibold">Pesma Inn</span>
+          <span class="block text-[10px] uppercase tracking-[0.18em] text-primary-content/60">Admin Panel · KH. Mas Mansur</span>
+        </span>
+      </a>
 
-        <!-- Navigation -->
-        <nav class="flex gap-6 items-center">
-          <a href="{{ route('admin.dashboard') }}" class="font-semibold opacity-90 hover:opacity-100 hover:underline">Dashboard</a>
-          <a href="{{ route('kamar.index') }}" class="font-semibold opacity-90 hover:opacity-100 hover:underline">Data Kamar</a>
-          <a href="{{ route('pengunjung.index') }}" class="font-semibold opacity-90 hover:opacity-100 hover:underline">Data Pengunjung</a>
-          <a href="{{ route('pembayaran.konfirmasi') }}" class="font-semibold opacity-90 hover:opacity-100 hover:underline">Pembayaran</a>
-          <a href="{{ route('report.monthly') }}" class="font-semibold opacity-90 hover:opacity-100 hover:underline">Report</a>
-          <a href="{{ route('beranda.edit') }}" class="font-semibold opacity-90 hover:opacity-100 hover:underline">Edit Beranda</a>
-        </nav>
+      <nav class="order-3 flex w-full flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-3 md:order-none md:w-auto md:border-0 md:pt-0" aria-label="Navigasi admin">
+        <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-primary-content/75 transition hover:text-white">Dashboard</a>
+        <a href="{{ route('kamar.index') }}" class="text-sm font-medium text-primary-content/75 transition hover:text-white">Data Kamar</a>
+        <a href="{{ route('pengunjung.index') }}" class="text-sm font-medium text-primary-content/75 transition hover:text-white">Pengunjung</a>
+        <a href="{{ route('pembayaran.konfirmasi') }}" class="text-sm font-medium text-primary-content/75 transition hover:text-white">Pembayaran</a>
+        <a href="{{ route('report.monthly') }}" class="text-sm font-medium text-primary-content/75 transition hover:text-white">Report</a>
+        <a href="{{ route('beranda.edit') }}" class="text-sm font-medium text-primary-content/75 transition hover:text-white">Edit Beranda</a>
+      </nav>
 
-        <!-- Logout Button -->
-        <form method="POST" action="{{ route('auth.logout') }}" class="ml-4">
-          @csrf
-          <button type="submit" class="bg-white text-[var(--brand)] font-extrabold px-5 py-2 rounded-full hover:brightness-95 transition">
-            Logout
-          </button>
-        </form>
-      </div>
-    </header>
-  </div>
-
-  <!-- Hero Area -->
-  <main class="relative py-10 min-h-[320px] overflow-hidden">
-    <div class="absolute inset-0 pointer-events-none">
-      <div class="blob b1"></div>
-      <div class="blob b2"></div>
-      <div class="blob b3"></div>
+      <form method="POST" action="{{ route('auth.logout') }}">
+        @csrf
+        <button type="submit" class="btn btn-ghost btn-sm rounded-full border border-white/30 font-medium normal-case text-primary-content hover:bg-white/10">
+          <i class="fas fa-right-from-bracket text-xs"></i> Logout
+        </button>
+      </form>
     </div>
+  </header>
 
-    <div class="relative container mx-auto px-6">
+  <main class="min-h-[70vh]">
+    <div class="mx-auto max-w-7xl px-5 py-8 lg:px-8 lg:py-10">
       @yield('content')
     </div>
   </main>

@@ -1,166 +1,190 @@
 @extends('layout')
+
 @section('content')
-<style>
-  .section-header{background:var(--brand);color:#fff;border-radius:18px;padding:18px 22px;align-items:center;justify-content:space-between;margin-bottom:14px}
-  .pill-btn{background:#fff;color:var(--brand);border:0;border-radius:999px;padding:8px 16px;font-weight:700;text-decoration:none}
-  .pill-btn:hover{filter:brightness(95%)}
-  .table-shell{background:rgba(179,18,59,.08); border-radius:18px; padding:18px}
-  .data-table{width:100%;border-collapse:collapse}
-  .data-table thead th{background:#f5d7de;padding:12px;text-align:left;color:#7b1a2e;font-weight:600;border-bottom:2px solid #e8c5d0}
-  .data-table tbody td{background:#fff;padding:12px;border-bottom:1px solid #f0e1e5}
-  .data-table tbody tr:last-child td{border-bottom:0}
-  .btn-delete{background:#dc3545;color:#fff;border:0;padding:6px 12px;border-radius:6px;font-size:13px;cursor:pointer}
-  .btn-delete:hover{background:#c82333}
-  .aksi-menu.show{display:block!important}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.pill-btn').forEach(btn => {
-    if(btn.textContent.includes('Aksi')) {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const menu = this.nextElementSibling;
-        document.querySelectorAll('.aksi-menu').forEach(m => m.classList.remove('show'));
-        menu.classList.toggle('show');
-      });
-    }
-  });
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.aksi-menu').forEach(m => m.classList.remove('show'));
-  });
-});
-</script>
-
-{{-- <div class="section-header">
-  <a href="{{ route('admin.dashboard') }}" class="pill-btn">Kembali</a>
-</div> --}}
-
-<div class="table-shell">
-  <div class="flex items-center justify-between mb-3">
-    <div style="font-weight:600;color:#7b1a2e">DATA KAMAR PENGINAPAN</div>
-    <div class="flex items-center gap-2">
-      <a href="{{ route('kamar.create') }}" class="px-3 py-1 text-sm bg-[var(--brand)] text-white rounded">Tambah Kamar</a>
+<div class="mb-8">
+  <span class="section-kicker">Data Kamar</span>
+  <div class="mt-2 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="section-heading">Daftar Kamar Penginapan</h1>
+      <p class="mt-2 text-sm text-base-content/60">Harga dan foto dikelola per jenis kamar. Tabel di bawah hanya untuk melihat data tiap kamar.</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <button type="button" id="toggleHargaFoto" class="btn btn-ghost btn-sm rounded-full normal-case border border-base-300">
+        <i class="fas fa-pen text-xs"></i> <span id="toggleHargaFotoLabel">Edit</span>
+      </button>
+      <a href="{{ route('kamar.create') }}" class="btn btn-primary btn-sm rounded-full normal-case">
+        <i class="fas fa-plus text-xs"></i> Tambah Kamar
+      </a>
     </div>
   </div>
-  <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
-    <input id="kamar-filter" placeholder="Cari kode kamar (mis. KUN-STD-01)" style="flex:1;padding:8px;border:1px solid #e5e7eb;border-radius:8px;" />
-    <button type="button" id="kamar-filter-action" class="pill-btn" style="background:#fff;color:var(--brand);padding:6px 10px">Cari</button>
-    <div id="kamar-search-result" style="font-size:13px;color:#7b1a2e;margin-left:8px"></div>
+</div>
+
+<section id="hargaFotoCard" class="soft-card p-5 sm:p-6 {{ $errors->any() || session('error') ? '' : 'hidden' }}">
+  <span class="section-kicker">Harga & Foto</span>
+  <h2 class="mt-2 text-lg font-semibold text-primary">Per Jenis Kamar</h2>
+  <p class="mt-1 text-sm text-base-content/60">
+    Perubahan harga berlaku untuk semua kamar dengan jenis yang sama. Foto JPG/JPEG maks. 4MB akan mengganti gambar di beranda.
+  </p>
+
+  <div class="mt-5 divide-y divide-base-200">
+    @forelse($jenisKamars as $item)
+      <div class="flex flex-wrap items-center gap-4 py-4">
+        <div class="h-16 w-24 shrink-0 overflow-hidden rounded-xl border border-base-200 bg-base-200/50">
+          @if($item['foto'])
+            <img src="{{ asset($item['foto']) }}" alt="{{ $item['jenis'] }}" class="h-full w-full object-cover">
+          @else
+            <div class="flex h-full items-center justify-center text-base-content/30">
+              <i class="fas fa-image text-xl"></i>
+            </div>
+          @endif
+        </div>
+
+        <div class="min-w-[140px] flex-1">
+          <p class="text-sm font-semibold text-primary">{{ $item['jenis'] }}</p>
+          <p class="mt-0.5 text-xs text-base-content/50">
+            {{ $kamars->where('jenis_kamar', $item['jenis'])->count() }} kamar ·
+            {{ $item['foto'] ? basename($item['foto']) : 'Belum ada gambar' }}
+          </p>
+        </div>
+
+        <form action="{{ route('kamar.jenis.update') }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
+          @csrf
+          <input type="hidden" name="jenis_kamar" value="{{ $item['jenis'] }}">
+
+          <label class="block">
+            <span class="mb-1 block text-[11px] font-medium text-base-content/60">Harga (Rp)</span>
+            <input type="number" name="harga" value="{{ $item['harga'] }}" min="0" required class="input input-bordered input-sm w-36">
+          </label>
+
+          <label class="block">
+            <span class="mb-1 block text-[11px] font-medium text-base-content/60">Foto Baru</span>
+            <input type="file" name="foto" accept=".jpg,.jpeg" class="file-input file-input-bordered file-input-sm w-full sm:w-48">
+          </label>
+
+          <button type="submit" class="btn btn-primary btn-sm rounded-full normal-case">
+            <i class="fas fa-floppy-disk text-xs"></i> Simpan
+          </button>
+        </form>
+      </div>
+    @empty
+      <p class="py-6 text-sm text-base-content/50">Belum ada jenis kamar terdaftar.</p>
+    @endforelse
   </div>
-  <div style="overflow-x:auto">
-    <table class="data-table">
-      <thead>
+</section>
+
+<section class="soft-card mt-6 p-5 sm:p-6">
+  <div class="flex flex-wrap items-center gap-3">
+    <label class="relative min-w-[220px] flex-1">
+      <i class="fas fa-magnifying-glass pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-base-content/40"></i>
+      <input id="kamar-filter" type="search" placeholder="Cari kode kamar, mis. KUN-STD-01" class="input input-bordered w-full pl-11">
+    </label>
+    <button type="button" id="kamar-filter-action" class="btn btn-primary btn-sm rounded-full normal-case">Cari</button>
+    <span id="kamar-search-result" class="text-xs text-secondary"></span>
+  </div>
+
+  <div class="mt-5 overflow-x-auto">
+    <table class="table w-full">
+      <thead class="bg-primary/5 text-primary">
         <tr>
-          <th>Kode Kamar</th>
-          <th>Jenis Kamar</th>
-          <th>Gedung</th>
-          <th>Harga</th>
-          <th>Fasilitas</th>
-          <th>Status</th>
-          <th>Aksi</th>
+          <th class="text-[11px] uppercase tracking-wider">Kode Kamar</th>
+          <th class="text-[11px] uppercase tracking-wider">Jenis Kamar</th>
+          <th class="text-[11px] uppercase tracking-wider">Gedung</th>
+          <th class="text-[11px] uppercase tracking-wider">Harga</th>
+          <th class="text-[11px] uppercase tracking-wider">Fasilitas</th>
+          <th class="text-[11px] uppercase tracking-wider">Status</th>
+          <th class="text-[11px] uppercase tracking-wider">Aksi</th>
         </tr>
       </thead>
       <tbody>
-        @forelse($kamars as $k)
-        <tr data-status="{{ $k->status ?? 'kosong' }}">
-          <td>{{ $k->kode_kamar ?? $k->nomor_kamar }}</td>
-          <td>{{ $k->jenis_kamar }}</td>
-          <td>{{ $k->gedung }}</td>
-          <td>Rp {{ number_format($k->harga ?? 0,0,',','.') }}</td>
-          <td>{{ $k->fasilitas }}</td>
-          <td><span class="px-2 py-1 rounded text-xs" style="background:{{ $k->status == 'kosong' ? '#d1fae5' : '#fee2e2' }};color:{{ $k->status == 'kosong' ? '#065f46' : '#991b1b' }}">{{ ucfirst($k->status) }}</span></td>
-          <td>
-            <div style="position:relative;display:inline-block">
-              <button class="pill-btn" style="font-size:13px">Aksi ▾</button>
-              <div style="position:absolute;right:0;background:#fff;border:1px solid #eee;padding:8px;border-radius:6px;display:none;min-width:140px;z-index:100" class="aksi-menu">
-                <a href="{{ route('kamar.edit', $k->id) }}" style="display:block;padding:6px 8px;text-decoration:none;color:#333">Edit</a>
-                <a href="#" onclick="alert('View Detail Kamar: {{ $k->kode_kamar ?? $k->nomor_kamar }}')" style="display:block;padding:6px 8px;text-decoration:none;color:#333">View Detail</a>
-                <form action="{{ route('kamar.destroy', $k->id) }}" method="GET" onsubmit="return confirm('Hapus kamar ini?')" style="margin:0">
-                  <button type="submit" style="width:100%;text-align:left;padding:6px 8px;border:0;background:none;cursor:pointer;color:#dc3545">Hapus</button>
-                </form>
-              </div>
-            </div>
-          </td>
-        </tr>
+        @forelse($kamars as $kamar)
+          <tr class="hover:bg-base-200/50" data-status="{{ $kamar->status ?? 'kosong' }}">
+            <td class="text-sm font-medium">{{ $kamar->kode_kamar ?? $kamar->nomor_kamar }}</td>
+            <td class="text-sm">{{ $kamar->jenis_kamar }}</td>
+            <td class="text-sm">{{ $kamar->gedung }}</td>
+            <td class="text-sm font-semibold text-primary">Rp {{ number_format($kamar->harga ?? 0, 0, ',', '.') }}</td>
+            <td class="max-w-[200px] truncate text-xs text-base-content/60">{{ $kamar->fasilitas }}</td>
+            <td>
+              @if(($kamar->status ?? 'kosong') == 'kosong')
+                <span class="inline-flex rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success">Kosong</span>
+              @else
+                <span class="inline-flex rounded-full bg-error/10 px-3 py-1 text-xs font-medium text-error">Terisi</span>
+              @endif
+            </td>
+            <td>
+              <details class="dropdown dropdown-end">
+                <summary class="btn btn-ghost btn-sm rounded-full normal-case text-secondary hover:bg-secondary/10">Aksi</summary>
+                <ul class="menu dropdown-content z-20 mt-2 w-44 rounded-box border border-base-200 bg-base-100 p-2 shadow-xl">
+                  <li><a href="{{ route('kamar.edit', $kamar->id) }}">Edit Data</a></li>
+                  <li><a href="#" onclick="alert('View Detail Kamar: {{ $kamar->kode_kamar ?? $kamar->nomor_kamar }}')">View Detail</a></li>
+                  <li>
+                    <form action="{{ route('kamar.destroy', $kamar->id) }}" method="GET" onsubmit="return confirm('Hapus kamar ini?')">
+                      <button type="submit" class="text-error">Hapus</button>
+                    </form>
+                  </li>
+                </ul>
+              </details>
+            </td>
+          </tr>
         @empty
-        <tr><td colspan="7" style="text-align:center;color:#999;padding:24px">Belum ada data.</td></tr>
+          <tr>
+            <td colspan="8" class="py-10 text-center text-sm text-base-content/50">Belum ada data kamar.</td>
+          </tr>
         @endforelse
       </tbody>
     </table>
   </div>
-</div>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      try {
-        console.debug('kamar: script loaded');
-        const input = document.getElementById('kamar-filter');
-        const actionBtn = document.getElementById('kamar-filter-action');
-        const resultArea = document.getElementById('kamar-search-result');
-        const table = document.querySelector('.data-table');
-        if (!input || !table) { console.debug('kamar: input or table missing', !!input, !!table); return; }
+</section>
 
-        function filter() {
-          try {
-            const q = (input.value || '').trim().toLowerCase();
-            const rows = Array.from(table.querySelectorAll('tbody tr'));
-            rows.forEach(r => {
-              const kodeCell = r.querySelector('td'); // first column = kode_kamar
-              const kodeText = kodeCell ? kodeCell.textContent.trim().toLowerCase() : '';
-              if (!q || kodeText.indexOf(q) !== -1) {
-                r.style.display = '';
-              } else {
-                r.style.display = 'none';
-              }
-            });
-              // After filtering, reorder visible rows so occupied rooms appear on top
-              try { reorderRows(); } catch(e) { console.debug('kamar: reorder after filter failed', e); }
-          } catch (e) { console.error('kamar: filter error', e); }
-        }
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const input = document.getElementById('kamar-filter');
+  const actionBtn = document.getElementById('kamar-filter-action');
+  const resultArea = document.getElementById('kamar-search-result');
+  const table = document.querySelector('.table');
+  if (!input || !table) return;
 
-        // live filter while typing
-        input.addEventListener('input', filter);
-
-        // action button (Cari): trigger filter and show searched kode
-        actionBtn && actionBtn.addEventListener('click', function() {
-          input.focus();
-          filter();
-          const q = (input.value || '').trim();
-          if (q) {
-            resultArea.textContent = 'Menampilkan hasil pencarian: ' + q;
-          } else {
-            resultArea.textContent = '';
-          }
-        });
-
-          // Reorder rows so 'terisi' (non-kosong) appear above 'kosong'
-          function reorderRows() {
-            try {
-              const tbody = table.tBodies[0];
-              if (!tbody) return;
-              const rows = Array.from(tbody.querySelectorAll('tr'));
-              const visible = rows.filter(r => r.style.display !== 'none');
-              const hidden = rows.filter(r => r.style.display === 'none');
-              visible.sort((a, b) => {
-                const sa = (a.dataset.status || '').toLowerCase();
-                const sb = (b.dataset.status || '').toLowerCase();
-                const pa = (sa === 'kosong') ? 1 : 0;
-                const pb = (sb === 'kosong') ? 1 : 0;
-                return pa - pb;
-              });
-              visible.concat(hidden).forEach(r => tbody.appendChild(r));
-            } catch (err) {
-              console.debug('kamar: reorderRows error', err);
-            }
-          }
-
-        // initial debug
-        console.debug('kamar: initialized, rows=', table.querySelectorAll('tbody tr').length);
-          // initial reorder on load
-          reorderRows();
-      } catch (err) {
-        console.error('kamar: init error', err);
-      }
+  function reorderRows() {
+    const tbody = table.tBodies[0];
+    if (!tbody) return;
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const visible = rows.filter((row) => row.style.display !== 'none');
+    const hidden = rows.filter((row) => row.style.display === 'none');
+    visible.sort((a, b) => {
+      const pa = (a.dataset.status || '').toLowerCase() === 'kosong' ? 1 : 0;
+      const pb = (b.dataset.status || '').toLowerCase() === 'kosong' ? 1 : 0;
+      return pa - pb;
     });
-    </script>
+    visible.concat(hidden).forEach((row) => tbody.appendChild(row));
+  }
+
+  function filter() {
+    const query = (input.value || '').trim().toLowerCase();
+    table.querySelectorAll('tbody tr').forEach((row) => {
+      const code = row.querySelector('td')?.textContent.trim().toLowerCase() || '';
+      row.style.display = !query || code.includes(query) ? '' : 'none';
+    });
+    reorderRows();
+  }
+
+  input.addEventListener('input', filter);
+  actionBtn?.addEventListener('click', () => {
+    filter();
+    const query = (input.value || '').trim();
+    resultArea.textContent = query ? 'Menampilkan hasil: ' + query : '';
+  });
+
+  reorderRows();
+
+  const editButton = document.getElementById('toggleHargaFoto');
+  const editLabel = document.getElementById('toggleHargaFotoLabel');
+  const hargaFotoCard = document.getElementById('hargaFotoCard');
+
+  editButton?.addEventListener('click', () => {
+    const willShow = hargaFotoCard.classList.contains('hidden');
+    hargaFotoCard.classList.toggle('hidden', !willShow);
+    editLabel.textContent = willShow ? 'Tutup Edit' : 'Edit';
+    if (willShow) hargaFotoCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
 @endsection

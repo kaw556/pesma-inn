@@ -1,187 +1,120 @@
 @extends('layout')
+
 @section('content')
-<div style="padding:20px">
-  <h3>Edit Data Pengunjung: {{ $p->nama }}</h3>
-  
+<div class="mx-auto max-w-4xl">
+  <div class="mb-8">
+    <span class="section-kicker">Data Pengunjung</span>
+    <h1 class="section-heading mt-2">Edit Data Pengunjung</h1>
+    <p class="mt-2 text-sm text-base-content/60">{{ $p->nama }}</p>
+  </div>
+
   @if($errors->any())
-    <div style="background:#fee;padding:12px;border-radius:6px;margin-bottom:16px">
-      <strong>Error:</strong>
-      <ul style="margin:8px 0 0 20px">
-        @foreach($errors->all() as $err)
-          <li>{{ $err }}</li>
+    <div class="alert alert-error mb-6 text-sm">
+      <ul class="list-disc pl-5">
+        @foreach($errors->all() as $error)
+          <li>{{ $error }}</li>
         @endforeach
       </ul>
     </div>
   @endif
 
-  <form action="{{ route('pengunjung.update', $p->id) }}" method="POST" style="background:#fff;padding:24px;border-radius:8px;max-width:800px" id="editForm">
-    @csrf
-    
-    <div style="margin-bottom:16px">
-      <label style="display:block;margin-bottom:4px;font-weight:600">Nama PIC <span style="color:red">*</span></label>
-      <input type="text" name="nama_pic" value="{{ old('nama_pic', $p->nama_pic ?: $p->nama) }}" required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px">
-      <input type="hidden" name="nama" value="{{ $p->nama_pic ?: $p->nama }}">
-    </div>
+  <section class="soft-card p-6 sm:p-8">
+    <form action="{{ route('pengunjung.update', $p->id) }}" method="POST" class="space-y-5" id="editForm">
+      @csrf
 
-    <div style="margin-bottom:16px">
-      <label style="display:block;margin-bottom:4px;font-weight:600">Jenis Tamu</label>
-      <select name="jenis_tamu" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px">
-        <option value="corporate" {{ old('jenis_tamu', $p->jenis_tamu) == 'corporate' ? 'selected' : '' }}>Corporate</option>
-        <option value="individu" {{ old('jenis_tamu', $p->jenis_tamu) == 'individu' ? 'selected' : '' }}>Individu</option>
-      </select>
-    </div>
-
-    <div style="margin-bottom:16px">
-      <label style="display:block;margin-bottom:4px;font-weight:600">No Identitas</label>
-      <input type="text" name="no_identitas" value="{{ old('no_identitas', $p->no_identitas) }}" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px">
-    </div>
-
-    <div style="margin-bottom:16px">
-      <label style="display:block;margin-bottom:4px;font-weight:600">No HP PIC</label>
-      <input type="text" name="no_telp_pic" value="{{ old('no_telp_pic', $p->no_telp_pic ?: $p->no_telp) }}" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px">
-      <input type="hidden" name="no_telp" value="{{ $p->no_telp_pic ?: $p->no_telp }}">
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <div>
-        <label style="display:block;margin-bottom:4px;font-weight:600">Check-in <span style="color:red">*</span></label>
-        <input type="date" name="check_in" value="{{ old('check_in', $p->check_in) }}" required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px">
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="nama_pic" class="mb-1.5 block text-xs font-medium text-base-content/70">Nama PIC <span class="text-error">*</span></label>
+          <input id="nama_pic" type="text" name="nama_pic" value="{{ old('nama_pic', $p->nama_pic ?: $p->nama) }}" required class="input input-bordered w-full">
+          <input type="hidden" name="nama" value="{{ $p->nama_pic ?: $p->nama }}">
+        </div>
+        <div>
+          <label for="jenis_tamu" class="mb-1.5 block text-xs font-medium text-base-content/70">Jenis Tamu</label>
+          <select id="jenis_tamu" name="jenis_tamu" class="select select-bordered w-full">
+            <option value="corporate" {{ old('jenis_tamu', $p->jenis_tamu) == 'corporate' ? 'selected' : '' }}>Corporate</option>
+            <option value="individu" {{ old('jenis_tamu', $p->jenis_tamu) == 'individu' ? 'selected' : '' }}>Individu</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label style="display:block;margin-bottom:4px;font-weight:600">Check-out <span style="color:red">*</span></label>
-        <input type="date" name="check_out" value="{{ old('check_out', $p->check_out) }}" required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px">
-      </div>
-    </div>
 
-    <div style="margin-bottom:16px">
-      <label style="display:block;margin-bottom:4px;font-weight:600">Kode Kamar</label>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="no_identitas" class="mb-1.5 block text-xs font-medium text-base-content/70">No Identitas</label>
+          <input id="no_identitas" type="text" name="no_identitas" value="{{ old('no_identitas', $p->no_identitas) }}" class="input input-bordered w-full">
+        </div>
+        <div>
+          <label for="no_telp_pic" class="mb-1.5 block text-xs font-medium text-base-content/70">No HP PIC</label>
+          <input id="no_telp_pic" type="text" name="no_telp_pic" value="{{ old('no_telp_pic', $p->no_telp_pic ?: $p->no_telp) }}" class="input input-bordered w-full">
+          <input type="hidden" name="no_telp" value="{{ $p->no_telp_pic ?: $p->no_telp }}">
+        </div>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="check_in" class="mb-1.5 block text-xs font-medium text-base-content/70">Check-in <span class="text-error">*</span></label>
+          <input id="check_in" type="date" name="check_in" value="{{ old('check_in', $p->check_in) }}" required class="input input-bordered w-full">
+        </div>
+        <div>
+          <label for="check_out" class="mb-1.5 block text-xs font-medium text-base-content/70">Check-out <span class="text-error">*</span></label>
+          <input id="check_out" type="date" name="check_out" value="{{ old('check_out', $p->check_out) }}" required class="input input-bordered w-full">
+        </div>
+      </div>
+
       @php
-        $currentKamars = $p->kode_kamar ? explode(',', str_replace(' ', '', $p->kode_kamar)) : [];
+        $selectedRooms = $p->kode_kamar ? explode(',', str_replace(' ', '', $p->kode_kamar)) : [];
       @endphp
-      <select name="kode_kamar[]" multiple style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;min-height:150px">
-        @foreach($kamars as $k)
-          @php
-            $kodeKamar = $k->kode_kamar;
-            $isSelected = in_array($kodeKamar, $currentKamars);
-            $isAvailable = $k->status === 'kosong' || $isSelected;
-          @endphp
-          <option 
-            value="{{ $kodeKamar }}" 
-            {{ $isSelected ? 'selected' : '' }}
-            {{ !$isAvailable ? 'disabled' : '' }}
-            style="{{ !$isAvailable ? 'color:#999' : ($isSelected ? 'background:#dbeafe;font-weight:600' : '') }}"
-          >
-            {{ $kodeKamar }} — {{ $k->jenis_kamar }} — {{ $k->gedung }}
-            @if(!$isAvailable) (Terisi) @endif
-            @if($isSelected) (Terpilih) @endif
-          </option>
-        @endforeach
-      </select>
-      <small style="display:block;margin-top:6px;color:#666">
-        Tekan <strong>Ctrl</strong> (Windows) atau <strong>Cmd</strong> (Mac) untuk pilih beberapa kamar. 
-        <span style="color:#10b981;font-weight:600">{{ $kamars->where('status', 'kosong')->count() }}</span> kamar kosong tersedia.
-      </small>
-      {{-- expose room prices to JS so frontend can sum selected room costs on submit --}}
-      <script>
-        window.roomPrices = {!! json_encode($kamars->pluck('harga','kode_kamar')) !!};
-      </script>
-    </div>
 
-    <div style="margin-bottom:16px">
-      <label style="display:block;margin-bottom:4px;font-weight:600">Jumlah Kamar</label>
-      <input type="number" name="jumlah_kamar" value="{{ old('jumlah_kamar', $p->jumlah_kamar) }}" min="1" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px">
-    </div>
-
-    <div style="margin-bottom:16px">
-      <label style="display:block;margin-bottom:4px;font-weight:600">Status Pembayaran</label>
-      <select name="payment_status" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px">
-        <option value="pending" {{ old('payment_status', $p->payment_status) == 'pending' ? 'selected' : '' }}>Pending</option>
-        <option value="konfirmasi_booking" {{ old('payment_status', $p->payment_status) == 'konfirmasi_booking' ? 'selected' : '' }}>Konfirmasi Booking</option>
-        <option value="paid" {{ old('payment_status', $p->payment_status) == 'paid' ? 'selected' : '' }}>Paid</option>
-        <option value="lunas" {{ old('payment_status', $p->payment_status) == 'lunas' ? 'selected' : '' }}>Lunas</option>
-        <option value="rejected" {{ old('payment_status', $p->payment_status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
-      </select>
-    </div>
-
-    <div style="border-top:2px solid #e5e7eb;margin:24px 0;padding-top:24px">
-      <h4 style="margin-bottom:16px">Data Kegiatan</h4>
-      
-      <div style="margin-bottom:16px">
-        <label style="display:block;margin-bottom:4px;font-weight:600">Nama Kegiatan</label>
-        <input type="text" name="nama_kegiatan" value="{{ old('nama_kegiatan', $p->nama_kegiatan) }}" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px">
+      <div>
+        <label for="kode_kamar" class="mb-1.5 block text-xs font-medium text-base-content/70">Kode Kamar</label>
+        <select id="kode_kamar" name="kode_kamar[]" multiple class="select select-bordered h-auto min-h-36 w-full py-2">
+          @foreach($kamars as $room)
+            @php
+              $isSelected = in_array($room->kode_kamar, $selectedRooms);
+              $isAvailable = $room->status === 'kosong' || $isSelected;
+            @endphp
+            <option value="{{ $room->kode_kamar }}" {{ $isSelected ? 'selected' : '' }} {{ $isAvailable ? '' : 'disabled' }}>
+              {{ $room->kode_kamar }} — {{ $room->jenis_kamar }} — {{ $room->gedung }}
+              @if(!$isAvailable) (Terisi) @endif
+              @if($isSelected) (Terpilih) @endif
+            </option>
+          @endforeach
+        </select>
+        <p class="mt-1.5 text-xs text-base-content/50">
+          Tekan <strong>Ctrl</strong> (Windows) atau <strong>Cmd</strong> (Mac) untuk memilih beberapa kamar.
+          <span class="font-semibold text-success">{{ $kamars->where('status', 'kosong')->count() }}</span> kamar kosong tersedia.
+        </p>
       </div>
 
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="jumlah_kamar" class="mb-1.5 block text-xs font-medium text-base-content/70">Jumlah Kamar</label>
+          <input id="jumlah_kamar" type="number" name="jumlah_kamar" value="{{ old('jumlah_kamar', $p->jumlah_kamar) }}" min="1" class="input input-bordered w-full">
+        </div>
+        <div>
+          <label for="payment_status" class="mb-1.5 block text-xs font-medium text-base-content/70">Status Pembayaran</label>
+          <select id="payment_status" name="payment_status" class="select select-bordered w-full">
+            <option value="pending" {{ old('payment_status', $p->payment_status) == 'pending' ? 'selected' : '' }}>Pending</option>
+            <option value="konfirmasi_booking" {{ old('payment_status', $p->payment_status) == 'konfirmasi_booking' ? 'selected' : '' }}>Konfirmasi Booking</option>
+            <option value="paid" {{ old('payment_status', $p->payment_status) == 'paid' ? 'selected' : '' }}>Paid</option>
+            <option value="lunas" {{ old('payment_status', $p->payment_status) == 'lunas' ? 'selected' : '' }}>Lunas</option>
+            <option value="rejected" {{ old('payment_status', $p->payment_status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
+          </select>
+        </div>
+      </div>
 
-    <div style="display:flex;gap:12px;margin-top:24px">
-      <button type="submit" class="pill-btn" style="background:#2563eb;color:#fff;padding:12px 32px;border:none;cursor:pointer">
-        Simpan Perubahan
-      </button>
-      
-      <a href="{{ route('pengunjung.show', $p->id) }}" class="pill-btn" style="background:#6b7280;color:#fff;padding:12px 32px">
-        Batal
-      </a>
-    </div>
-  </form>
+      <div class="border-t border-base-200 pt-5">
+        <h2 class="text-sm font-semibold text-primary">Data Kegiatan</h2>
+        <div class="mt-4">
+          <label for="nama_kegiatan" class="mb-1.5 block text-xs font-medium text-base-content/70">Nama Kegiatan</label>
+          <input id="nama_kegiatan" type="text" name="nama_kegiatan" value="{{ old('nama_kegiatan', $p->nama_kegiatan) }}" class="input input-bordered w-full">
+        </div>
+      </div>
+
+      <div class="flex flex-wrap justify-end gap-3 border-t border-base-200 pt-5">
+        <a href="{{ route('pengunjung.show', $p->id) }}" class="btn btn-ghost rounded-full normal-case">Batal</a>
+        <button type="submit" class="btn btn-primary rounded-full normal-case">Simpan Perubahan</button>
+      </div>
+    </form>
+  </section>
 </div>
-
-
 @endsection
-<script>
-// Enable/disable qty inputs based on checkbox and collect structured data on submit
-document.addEventListener('DOMContentLoaded', function(){
-  function toggleInput(cb, qtySelector){
-    const qty = cb.parentElement.querySelector(qtySelector);
-    if(!qty) return;
-    qty.disabled = !cb.checked;
-  }
-
-  document.querySelectorAll('.menu-snack-cb').forEach(cb => {
-    toggleInput(cb, '.menu-snack-qty');
-    cb.addEventListener('change', function(){ toggleInput(this, '.menu-snack-qty'); });
-  });
-  document.querySelectorAll('.menu-meal-cb').forEach(cb => {
-    toggleInput(cb, '.menu-meal-qty');
-    cb.addEventListener('change', function(){ toggleInput(this, '.menu-meal-qty'); });
-  });
-
-  document.getElementById('editForm').addEventListener('submit', function(e){
-    // build snack array
-    const snacks = [];
-    document.querySelectorAll('.menu-snack-cb').forEach(cb => {
-      if(cb.checked){
-        const name = cb.getAttribute('data-name');
-        const qty = parseInt(cb.parentElement.querySelector('.menu-snack-qty').value || 0);
-        const price = parseFloat(cb.parentElement.querySelector('.menu-snack-qty').getAttribute('data-price') || 0);
-        snacks.push({nama: name, porsi: qty, harga: price});
-      }
-    });
-
-    const meals = [];
-    document.querySelectorAll('.menu-meal-cb').forEach(cb => {
-      if(cb.checked){
-        const name = cb.getAttribute('data-name');
-        const qty = parseInt(cb.parentElement.querySelector('.menu-meal-qty').value || 0);
-        const price = parseFloat(cb.parentElement.querySelector('.menu-meal-qty').getAttribute('data-price') || 0);
-        meals.push({nama: name, porsi: qty, harga: price});
-      }
-    });
-
-    // compute room total from selected kode_kamar[] using roomPrices exposed above
-    let roomTotal = 0;
-    const kodeSelect = document.querySelector('select[name="kode_kamar[]"]');
-    if(kodeSelect){
-      Array.from(kodeSelect.selectedOptions).forEach(opt => {
-        const code = opt.value;
-        const price = parseFloat(window.roomPrices[code] || 0);
-        if(!isNaN(price)) roomTotal += price;
-      });
-    }
-
-    // compute total harga (rooms + snacks + meals)
-    let total = roomTotal;
-    document.getElementById('total_harga_input').value = total;
-
-    // allow original submit to continue
-  });
-});
-</script>

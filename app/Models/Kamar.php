@@ -10,6 +10,26 @@ class Kamar extends Model
 
     protected $fillable = ['kode_kamar','jenis_kamar','gedung','harga','fasilitas','status','foto'];
 
+    /** Nama file gambar yang dipakai halaman publik untuk suatu jenis kamar. */
+    public static function fotoJenisNama(string $jenis): string
+    {
+        $nama = trim($jenis) === 'Standard' ? 'Standar Room' : trim($jenis);
+        return preg_replace('/[^\p{L}\p{N} ._-]/u', '', $nama);
+    }
+
+    /** Path relatif gambar jenis kamar di public/, atau null jika belum ada. */
+    public static function fotoJenisPath(?string $jenis): ?string
+    {
+        if (!$jenis) return null;
+
+        $nama = static::fotoJenisNama($jenis);
+        foreach (['jpg', 'jpeg'] as $ext) {
+            $path = "images/{$nama}.{$ext}";
+            if (file_exists(public_path($path))) return $path;
+        }
+        return null;
+    }
+
     /**
      * Check availability for this room between two dates (inclusive)
      * Returns true if available (no overlapping bookings), false if occupied

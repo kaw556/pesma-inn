@@ -58,26 +58,26 @@ class KamarSeeder extends Seeder
             ];
         }
 
-        // Student room Gedung Hijau - AC 9 kamar
+        // Student room Gedung Biru - AC 9 kamar
         for ($i = 1; $i <= 9; $i++) {
             $kamars[] = [
                     'kode_kamar' => sprintf('GH-AC-%02d', $i),
                 'jenis_kamar' => 'Student AC',
-                'gedung' => 'Gedung Hijau',
+                'gedung' => 'Gedung Biru',
                 'harga' => 200000,
                 'fasilitas' => 'AC, Kamar mandi dalam, 4 almari, 2 single bed tingkat, 4 set meja dan kursi',
                 'status' => 'kosong',
             ];
         }
 
-        // Student room Gedung Hijau - Non AC 32 kamar
+        // Student room Gedung Biru - Non AC 32 kamar
         for ($i = 1; $i <= 32; $i++) {
             $kamars[] = [
                     'kode_kamar' => sprintf('GH-NONAC2-%02d', $i),
                 'jenis_kamar' => 'Student Non AC',
-                'gedung' => 'Gedung Hijau',
+                'gedung' => 'Gedung Biru',
                 'harga' => 150000,
-                'fasilitas' => 'Kipas, Kamar mandi luar, 4 almari, 2 single bed tingkat, 4 set meja dan kursi',
+                'fasilitas' => 'Kipas, Kamar mandi dalam, 4 almari, 2 single bed tingkat, 4 set meja dan kursi',
                 'status' => 'kosong',
             ];
         }

@@ -7,17 +7,17 @@ admin/report/monthly_pd.blade.php
   <title>{{ $meta['title'] ?? 'Laporan Bulanan' }}</title>
   <style>
     body { font-family: Arial, sans-serif; font-size: 11px; color: #222; }
-    .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #7b1a2e; padding-bottom: 10px; }
-    .header h1 { margin: 0; font-size: 18px; color: #7b1a2e; }
+    .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #0d0b61; padding-bottom: 10px; }
+    .header h1 { margin: 0; font-size: 18px; color: #0d0b61; }
     .header p { margin: 4px 0; color: #666; font-size: 10px; }
     
     .stats-grid { display: table; width: 100%; margin: 15px 0; }
     .stat-box { display: table-cell; width: 25%; padding: 10px; text-align: center; border: 1px solid #ddd; background: #f9f9f9; }
-    .stat-value { font-size: 20px; font-weight: bold; color: #7b1a2e; }
+    .stat-value { font-size: 20px; font-weight: bold; color: #0d0b61; }
     .stat-label { font-size: 9px; color: #666; margin-top: 4px; }
     
     table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th { background: #7b1a2e; color: white; padding: 8px 6px; text-align: left; font-size: 10px; }
+    th { background: #0d0b61; color: white; padding: 8px 6px; text-align: left; font-size: 10px; }
     td { border: 1px solid #ddd; padding: 6px; font-size: 10px; }
     tr:nth-child(even) { background: #f9f9f9; }
     
@@ -30,7 +30,7 @@ admin/report/monthly_pd.blade.php
       font-weight: bold; 
       display: inline-block;
     }
-    .badge-corporate { background: #dbeafe; color: #1e40af; }
+    .badge-corporate { background: #e0f2f4; color: #0d0b61; }
     .badge-individu { background: #fef3c7; color: #92400e; }
     .badge-lunas { background: #d1fae5; color: #065f46; }
     .badge-pending { background: #fef3c7; color: #92400e; }
@@ -65,7 +65,7 @@ admin/report/monthly_pd.blade.php
   </div>
 
   <!-- Booking Table -->
-  <h3 style="margin-top: 20px; color: #7b1a2e; font-size: 12px;">Daftar Booking</h3>
+  <h3 style="margin-top: 20px; color: #0d0b61; font-size: 12px;">Daftar Booking</h3>
   <table>
     <thead>
       <tr>

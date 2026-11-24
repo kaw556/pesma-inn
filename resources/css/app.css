@@ -1,11 +1,145 @@
 @import 'tailwindcss';
 
+@plugin "daisyui" {
+  themes: false;
+}
+
+@plugin "daisyui/theme" {
+  name: "pesma";
+  default: true;
+  color-scheme: light;
+
+  --color-base-100: #ffffff;
+  --color-base-200: #f4f7fb;
+  --color-base-300: #e2e8f0;
+  --color-base-content: #0f172a;
+
+  --color-primary: #0d0b61;
+  --color-primary-content: #ffffff;
+
+  --color-secondary: #1fa9b8;
+  --color-secondary-content: #ffffff;
+
+  --color-accent: #f4b342;
+  --color-accent-content: #0d0b61;
+
+  --color-neutral: #111827;
+  --color-neutral-content: #f8fafc;
+
+  --color-info: #0ea5e9;
+  --color-info-content: #ffffff;
+  --color-success: #16a34a;
+  --color-success-content: #ffffff;
+  --color-warning: #f59e0b;
+  --color-warning-content: #1f2937;
+  --color-error: #dc2626;
+  --color-error-content: #ffffff;
+
+  --radius-selector: 999px;
+  --radius-field: 0.75rem;
+  --radius-box: 1rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/* Alias warna lama dipakai halaman admin → token tema landing. */
+:root {
+  --brand: var(--color-primary);
+  --brand-2: var(--color-secondary);
+  --soft: color-mix(in oklab, var(--color-secondary) 16%, white);
+}
+
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@layer components {
+  .nav-link {
+    @apply text-sm font-medium opacity-80 transition-opacity hover:opacity-100;
+  }
+
+  /* Logo UMS bawaan berwarna hitam. Saat navbar transparan (teks putih),
+     logo di-invert agar putih; saat navbar solid, kembali ke hitam. */
+  .nav-logo {
+    filter: none;
+    transition: filter 300ms ease, opacity 300ms ease;
+  }
+
+  .navbar.text-white .nav-logo {
+    filter: brightness(0) invert(1);
+  }
+
+  .footer-logo {
+    filter: brightness(0) invert(1);
+    opacity: 0.95;
+  }
+
+  .section-kicker {
+    @apply text-xs font-semibold uppercase tracking-[0.25em] text-secondary;
+  }
+
+  .section-heading {
+    @apply text-3xl font-semibold tracking-tight text-primary md:text-4xl;
+  }
+
+  .soft-card {
+    @apply rounded-2xl border border-base-200 bg-base-100 shadow-sm;
+  }
+
+  /* Carousel kamar */
+  .card-wrapper .swiper-slide {
+    height: auto;
+  }
+
+  .card-wrapper .room-card {
+    transition: transform 350ms ease, box-shadow 350ms ease, opacity 350ms ease;
+  }
+
+  .card-wrapper .swiper-slide-active .room-card {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 50px -22px rgba(13, 11, 97, 0.55);
+  }
+
+  .card-wrapper .swiper-slide:not(.swiper-slide-active) .room-card {
+    opacity: 0.78;
+  }
+
+  .card-wrapper .room-prev,
+  .card-wrapper .room-next {
+    flex: 0 0 auto;
+    border-color: var(--color-base-300);
+    background: var(--color-base-100);
+    color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  }
+
+  .card-wrapper .room-prev:hover,
+  .card-wrapper .room-next:hover {
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+  }
+
+  .card-wrapper .room-prev.swiper-button-disabled,
+  .card-wrapper .room-next.swiper-button-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .card-wrapper .swiper-pagination-bullet {
+    background: color-mix(in oklab, var(--color-primary) 22%, transparent);
+    opacity: 1;
+  }
+
+  .card-wrapper .swiper-pagination-bullet-active {
+    width: 1.75rem;
+    border-radius: 9999px;
+    background: var(--color-secondary);
+  }
 }

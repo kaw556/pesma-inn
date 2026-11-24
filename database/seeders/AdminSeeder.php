@@ -11,12 +11,6 @@ class AdminSeeder extends Seeder
 {
     public function run()
     {
-        // admins table
-        $admin = Admin::firstOrNew(['email' => 'admin@example.com']);
-        $admin->name = 'Administrator';
-        $admin->password = Hash::make('password123');
-        $admin->save();
-
         // users table - ensure role is admin
         $user = User::firstOrNew(['email' => 'admin@example.com']);
         $user->name = 'Administrator';

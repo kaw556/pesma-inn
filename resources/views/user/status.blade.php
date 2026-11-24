@@ -1,35 +1,36 @@
 @extends('layout')
+
 @section('content')
-<div style="padding:20px">
-  <h2>System Status - User Check</h2>
-  <p>Halaman ini menampilkan ringkasan singkat yang bisa digunakan untuk mengecek fungsionalitas sistem dari sisi user.</p>
-
-  <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
-    <div style="background:#fff;padding:16px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)">
-      <div style="font-size:24px;font-weight:700">{{ $totalKamar }}</div>
-      <div style="color:#666">Total Kamar</div>
-    </div>
-    <div style="background:#fff;padding:16px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)">
-      <div style="font-size:24px;font-weight:700">{{ $kamarKosong }}</div>
-      <div style="color:#666">Kamar Kosong</div>
-    </div>
-    <div style="background:#fff;padding:16px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)">
-      <div style="font-size:24px;font-weight:700">{{ $jumlahPengunjung }}</div>
-      <div style="color:#666">Jumlah Pengunjung</div>
-    </div>
-    <div style="background:#fff;padding:16px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04)">
-      <div style="font-size:24px;font-weight:700">{{ $pendingPayments }}</div>
-      <div style="color:#666">Pembayaran Pending</div>
-    </div>
-  </div>
-
-  <div style="margin-top:18px">
-    <p>Link cepat (user-facing):</p>
-    <ul>
-      <li><a href="{{ route('booking.individu') }}">Booking Individu</a></li>
-      <li><a href="{{ route('booking.corporate') }}">Booking Corporate</a></li>
-      <li><a href="{{ route('pengunjung.index') }}">Data Pengunjung (admin)</a> - but this needs admin login</li>
-    </ul>
-  </div>
+<div class="mb-8">
+  <span class="section-kicker">System Status</span>
+  <h1 class="section-heading mt-2">User Check</h1>
+  <p class="mt-2 text-sm text-base-content/60">Ringkasan singkat untuk mengecek fungsionalitas sistem dari sisi user.</p>
 </div>
+
+<div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+  @php
+    $statusStats = [
+      ['label' => 'Total Kamar', 'value' => $totalKamar],
+      ['label' => 'Kamar Kosong', 'value' => $kamarKosong],
+      ['label' => 'Jumlah Pengunjung', 'value' => $jumlahPengunjung],
+      ['label' => 'Pembayaran Pending', 'value' => $pendingPayments],
+    ];
+  @endphp
+
+  @foreach($statusStats as $stat)
+    <article class="soft-card p-6">
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50">{{ $stat['label'] }}</p>
+      <p class="mt-3 text-3xl font-semibold tracking-tight text-primary">{{ $stat['value'] }}</p>
+    </article>
+  @endforeach
+</div>
+
+<section class="soft-card mt-6 p-6">
+  <h2 class="text-sm font-semibold text-primary">Link cepat</h2>
+  <div class="mt-4 flex flex-wrap gap-3">
+    <a href="{{ route('booking.individu') }}" class="btn btn-ghost btn-sm rounded-full normal-case border border-base-300">Booking Individu</a>
+    <a href="{{ route('booking.corporate') }}" class="btn btn-ghost btn-sm rounded-full normal-case border border-base-300">Booking Corporate</a>
+    <a href="{{ route('pengunjung.index') }}" class="btn btn-ghost btn-sm rounded-full normal-case border border-base-300">Data Pengunjung (admin)</a>
+  </div>
+</section>
 @endsection

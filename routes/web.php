@@ -8,7 +8,6 @@ use App\Http\Controllers\KamarController;
 use App\Http\Controllers\PengunjungController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BerandaController;
-use App\Http\Controllers\KamarAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,11 +113,11 @@ Route::middleware([\App\Http\Middleware\AdminAuth::class])->group(function () {
     Route::post('/admin/kamar/simpan', [KamarController::class, 'store'])->name('kamar.store');
     Route::get('/admin/kamar/edit/{id}', [KamarController::class, 'edit'])->name('kamar.edit');
     Route::post('/admin/kamar/update/{id}', [KamarController::class, 'update'])->name('kamar.update');
+    Route::post('/admin/kamar/jenis', [KamarController::class, 'updateJenis'])->name('kamar.jenis.update');
     Route::get('/admin/kamar/hapus/{id}', [KamarController::class, 'destroy'])->name('kamar.destroy');
-    
-    // Alternative kamar admin routes (for price & photo management)
-    Route::get('/admin/kamar/manage', [KamarAdminController::class, 'index'])->name('admin.kamar.index');
-    Route::post('/admin/kamar/manage/{id}', [KamarAdminController::class, 'update'])->name('admin.kamar.update');
+
+    // URL lama tetap dialihkan ke halaman kamar yang sudah digabung
+    Route::get('/admin/kamar/manage', fn () => redirect()->route('kamar.index'))->name('admin.kamar.index');
 
     /*
     |--------------------------------------------------------------------------

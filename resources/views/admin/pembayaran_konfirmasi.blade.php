@@ -1,251 +1,227 @@
 @extends('layout')
+
 @section('content')
-<style>
-  .section-header{background:var(--brand);color:#fff;border-radius:18px;padding:18px 22px;margin-bottom:14px}
-  .pill-btn{background:#fff;color:var(--brand);border:0;border-radius:999px;padding:8px 16px;font-weight:700;text-decoration:none;display:inline-block}
-  .pill-btn:hover{filter:brightness(95%)}
-  .table-shell{background:rgba(179,18,59,.08); border-radius:18px; padding:18px;margin-bottom:20px}
-  .data-table{width:100%;border-collapse:collapse}
-  .data-table thead th{background:#f5d7de;padding:12px;text-align:left;color:#7b1a2e;font-weight:600;border-bottom:2px solid #e8c5d0}
-  .data-table tbody td{background:#fff;padding:12px;border-bottom:1px solid #f0e1e5}
-  .btn-confirm{background:#10b981;color:#fff;border:0;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;font-weight:600}
-  .btn-confirm:hover{background:#059669}
-  .btn-confirm:disabled{background:#ccc;cursor:not-allowed;}
-  .btn-reject{background:#ef4444;color:#fff;border:0;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;font-weight:600}
-  .btn-reject:hover{background:#dc2626}
-  .status-badge{padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Handle approve confirmation
-  document.querySelectorAll('form[action*="approve"]').forEach(form => {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      Swal.fire({
-        title: 'Konfirmasi Pembayaran?',
-        text: 'Booking akan disetujui dan tamu akan mendapat konfirmasi',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#10b981',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Ya, Konfirmasi!',
-        cancelButtonText: '✗ Batal',
-        reverseButtons: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          form.submit();
-        }
-      });
-    });
-  });
-
-  // Handle reject confirmation
-  document.querySelectorAll('form[action*="reject"]').forEach(form => {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      Swal.fire({
-        title: 'Tolak Booking?',
-        text: 'Booking akan ditolak dan tamu akan mendapat pemberitahuan',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: '✗ Ya, Tolak!',
-        cancelButtonText: 'Batal',
-        reverseButtons: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          form.submit();
-        }
-      });
-    });
-  });
-});
-</script>
-
-<div class="section-header">
-  <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-    <h2 style="margin:0;font-size:20px">Konfirmasi Pembayaran</h2>
-    <a href="{{ route('admin.dashboard') }}" class="pill-btn">Kembali</a>
+<div class="mb-8">
+  <span class="section-kicker">Pembayaran</span>
+  <div class="mt-2 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="section-heading">Konfirmasi Pembayaran</h1>
+      <p class="mt-2 text-sm text-base-content/60">Periksa bukti bayar dan setujui atau tolak pemesanan tamu.</p>
+    </div>
+    <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost btn-sm rounded-full normal-case border border-base-300">Kembali</a>
   </div>
 </div>
 
-<div class="table-shell">
-  <div style="font-weight:600;margin-bottom:16px;color:#7b1a2e;font-size:16px">Daftar Pembayaran Menunggu Konfirmasi</div>
-  
-  @if(session('success'))
-    <div style="background:#d1fae5;color:#065f46;padding:12px;border-radius:8px;margin-bottom:16px">
-      {{ session('success') }}
-    </div>
-  @endif
+@if(session('success'))
+  <div class="alert alert-success mb-6 text-sm">{{ session('success') }}</div>
+@endif
 
-  @if($errors->any())
-    <div style="background:#fee2e2;color:#991b1b;padding:12px;border-radius:8px;margin-bottom:16px">
+@if($errors->any())
+  <div class="alert alert-error mb-6 text-sm">
+    <ul class="list-disc pl-5">
       @foreach($errors->all() as $error)
-        <div>{{ $error }}</div>
+        <li>{{ $error }}</li>
       @endforeach
-    </div>
-  @endif
+    </ul>
+  </div>
+@endif
 
-  <div style="overflow-x:auto">
-    <table class="data-table">
-      <thead>
+<section class="soft-card overflow-hidden">
+  <div class="border-b border-base-200 px-5 py-4 sm:px-6">
+    <h2 class="text-sm font-semibold text-primary">Menunggu Konfirmasi</h2>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="table w-full">
+      <thead class="bg-primary/5 text-primary">
         <tr>
-          <th>No</th>
-          <th>Nama Tamu</th>
-          <th>Jenis</th>
-          <th>Metode Bayar</th> <th>Check-in / Check-out</th>
-          <th>Kode Kamar</th>
-          <th>Kamar Dipilih</th>
-          <th>Kontak</th>
-          <th>Status</th>
-          <th>Bukti Bayar</th>
-          <th>Total Harga</th>
-          <th>Aksi</th>
+          <th class="text-[11px] uppercase tracking-wider">No</th>
+          <th class="text-[11px] uppercase tracking-wider">Nama Tamu</th>
+          <th class="text-[11px] uppercase tracking-wider">Jenis</th>
+          <th class="text-[11px] uppercase tracking-wider">Metode Bayar</th>
+          <th class="text-[11px] uppercase tracking-wider">Check-in / out</th>
+          <th class="text-[11px] uppercase tracking-wider">Kode Kamar</th>
+          <th class="text-[11px] uppercase tracking-wider">Kamar Dipilih</th>
+          <th class="text-[11px] uppercase tracking-wider">Kontak</th>
+          <th class="text-[11px] uppercase tracking-wider">Status</th>
+          <th class="text-[11px] uppercase tracking-wider">Bukti Bayar</th>
+          <th class="text-[11px] uppercase tracking-wider">Total Harga</th>
+          <th class="text-[11px] uppercase tracking-wider">Aksi</th>
         </tr>
       </thead>
       <tbody>
-        @forelse($pengunjungs as $p)
-        <tr>
-          <td>{{ $loop->iteration }}</td>
-          <td>
-            @if(strtolower($p->jenis_tamu) == 'corporate')
-              <strong>{{ $p->nama_pic ?? 'PIC' }}</strong>
-              @if($p->nama)
-                <br><small style="color:#666">{{ $p->nama }}</small>
-              @endif
-            @else
-              <strong>{{ $p->nama }}</strong>
-            @endif
-          </td>
-          <td><span style="background:{{ strtolower($p->jenis_tamu) == 'corporate' ? '#28a745' : '#007bff' }};color:#fff;padding:4px 10px;border-radius:12px;font-size:12px">{{ ucfirst($p->jenis_tamu) }}</span></td>
-          
-          <td>
-             <span style="font-weight:bold; color: #a0203c;">
-                {{ $p->metode_pembayaran ?? '-' }}
-             </span>
-          </td>
-
-          <td>{{ $p->check_in }}<br>s/d {{ $p->check_out }}</td>
-          <td>{{ $p->kode_kamar ?? '-' }}</td>
-          <td>
-            @php
-              $kamarIds = explode(',', $p->kode_kamar ?? '');
-              $jenisKamars = [];
-              foreach ($kamarIds as $kamarId) {
-                $kamar = \App\Models\Kamar::where('kode_kamar', trim($kamarId))->first();
-                if ($kamar && !in_array($kamar->jenis_kamar, $jenisKamars)) {
-                  $jenisKamars[] = $kamar->jenis_kamar;
-                }
+        @forelse($pengunjungs as $guest)
+          @php
+            $roomTypes = [];
+            foreach (explode(',', $guest->kode_kamar ?? '') as $roomCode) {
+              $room = \App\Models\Kamar::where('kode_kamar', trim($roomCode))->first();
+              if ($room && !in_array($room->jenis_kamar, $roomTypes)) {
+                $roomTypes[] = $room->jenis_kamar;
               }
-            @endphp
-            <strong style="color:#7b1a2e">{{ implode(', ', $jenisKamars) ?: '-' }}</strong>
-          </td>
-          <td>
-            @php
-              $phone = preg_replace('/[^0-9+]/','',$p->no_telp_pic ?? $p->no_telp ?? '');
-              $wa = $phone ? 'https://wa.me/'.ltrim($phone,'0') : null;
-            @endphp
-            @if($wa)
-              <a href="{{ $wa }}" target="_blank" style="background:#25D366;color:#fff;padding:4px 8px;border-radius:4px;text-decoration:none;font-size:12px">💬 Chat</a>
-            @else
-              {{ $p->no_telp ?? '-' }}
-            @endif
-          </td>
-          <td>
-            <span class="status-badge" style="background:#fef3c7;color:#92400e">
-              {{ $p->payment_status_label }}
-            </span>
-          </td>
-          <td>
-            @if($p->bukti_pembayaran)
-              @php
-                $relPath = \Illuminate\Support\Str::startsWith($p->bukti_pembayaran, 'public/') ? substr($p->bukti_pembayaran, 7) : $p->bukti_pembayaran;
-                $fileExists = Storage::disk('public')->exists($relPath);
-              @endphp
-              @if($fileExists)
-                <a href="{{ Storage::url($relPath) }}" target="_blank" style="color:#2563eb;text-decoration:underline">Lihat Bukti</a>
-              @else
-                <span style="color:#dc2626;">⚠️ File hilang</span>
-              @endif
-            @else
-                @if($p->metode_pembayaran == 'Via Cash')
-                    <span style="color:#28a745; font-weight:bold;">Bayar di Tempat</span>
-                @else
-                    <span style="color:#999">Belum upload</span>
+            }
+
+            $phone = preg_replace('/[^0-9+]/', '', $guest->no_telp_pic ?? $guest->no_telp ?? '');
+            $wa = $phone ? 'https://wa.me/' . ltrim($phone, '0') : null;
+          @endphp
+
+          <tr class="hover:bg-base-200/50">
+            <td class="text-xs text-base-content/50">{{ $loop->iteration }}</td>
+            <td>
+              @if(strtolower($guest->jenis_tamu) == 'corporate')
+                <span class="text-sm font-semibold">{{ $guest->nama_pic ?? 'PIC' }}</span>
+                @if($guest->nama)
+                  <span class="mt-0.5 block text-xs text-base-content/50">{{ $guest->nama }}</span>
                 @endif
-            @endif
-          </td>
-          <td>
-            @if($p->total_harga)
-              <strong style="color:#10b981">Rp {{ number_format($p->total_harga, 0, ',', '.') }}</strong>
-            @else
-              <span style="color:#999">-</span>
-            @endif
-          </td>
-          <td>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <form action="{{ route('pengunjung.approve', $p->id) }}" method="POST" style="margin:0">
-                @csrf
-                <button type="submit" class="btn-confirm" 
-                    {{ (!$p->bukti_pembayaran && $p->metode_pembayaran !== 'Via Cash') ? 'disabled title=Butuh_bukti_pembayaran' : '' }}>
-                  Konfirmasi
-                </button>
-              </form>
-              <form action="{{ route('pengunjung.reject', $p->id) }}" method="POST" style="margin:0">
-                @csrf
-                <button type="submit" class="btn-reject">✗ Tolak</button>
-              </form>
-            </div>
-          </td>
-        </tr>
+              @else
+                <span class="text-sm font-medium">{{ $guest->nama }}</span>
+              @endif
+            </td>
+            <td>
+              <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium {{ strtolower($guest->jenis_tamu) == 'corporate' ? 'bg-success/10 text-success' : 'bg-info/10 text-info' }}">
+                {{ ucfirst($guest->jenis_tamu) }}
+              </span>
+            </td>
+            <td class="text-sm font-medium text-primary">{{ $guest->metode_pembayaran ?? '-' }}</td>
+            <td class="text-xs">{{ $guest->check_in }}<br>s/d {{ $guest->check_out }}</td>
+            <td class="text-xs">{{ $guest->kode_kamar ?? '-' }}</td>
+            <td class="text-xs font-medium">{{ implode(', ', $roomTypes) ?: '-' }}</td>
+            <td>
+              @if($wa)
+                <a href="{{ $wa }}" target="_blank" rel="noopener" class="btn btn-ghost btn-xs rounded-full normal-case text-[#25D366] hover:bg-[#25D366]/10" aria-label="Chat WhatsApp">
+                  <i class="fab fa-whatsapp text-sm"></i>
+                </a>
+              @else
+                <span class="text-xs">{{ $guest->no_telp ?? '-' }}</span>
+              @endif
+            </td>
+            <td>
+              <span class="inline-flex rounded-full bg-warning/15 px-3 py-1 text-xs font-medium text-warning">
+                {{ $guest->payment_status_label }}
+              </span>
+            </td>
+            <td>
+              @if($guest->bukti_pembayaran)
+                @php
+                  $relativePath = \Illuminate\Support\Str::startsWith($guest->bukti_pembayaran, 'public/')
+                    ? substr($guest->bukti_pembayaran, 7)
+                    : $guest->bukti_pembayaran;
+                  $proofExists = Storage::disk('public')->exists($relativePath);
+                @endphp
+                @if($proofExists)
+                  <a href="{{ Storage::url($relativePath) }}" target="_blank" rel="noopener" class="text-xs font-medium text-secondary hover:underline">Lihat Bukti</a>
+                @else
+                  <span class="text-xs text-error">File hilang</span>
+                @endif
+              @elseif($guest->metode_pembayaran == 'Via Cash')
+                <span class="text-xs font-medium text-success">Bayar di Tempat</span>
+              @else
+                <span class="text-xs text-base-content/40">Belum upload</span>
+              @endif
+            </td>
+            <td class="text-sm font-semibold text-primary">
+              {{ $guest->total_harga ? 'Rp ' . number_format($guest->total_harga, 0, ',', '.') : '-' }}
+            </td>
+            <td>
+              <div class="flex flex-wrap gap-2">
+                <form action="{{ route('pengunjung.approve', $guest->id) }}" method="POST">
+                  @csrf
+                  <button type="submit" class="btn btn-success btn-xs rounded-full normal-case" {{ (!$guest->bukti_pembayaran && $guest->metode_pembayaran !== 'Via Cash') ? 'disabled title=Butuh_bukti_pembayaran' : '' }}>
+                    Konfirmasi
+                  </button>
+                </form>
+                <form action="{{ route('pengunjung.reject', $guest->id) }}" method="POST">
+                  @csrf
+                  <button type="submit" class="btn btn-error btn-xs rounded-full normal-case">Tolak</button>
+                </form>
+              </div>
+            </td>
+          </tr>
         @empty
-        <tr><td colspan="12" style="text-align:center;color:#999;padding:32px">Tidak ada pembayaran yang perlu dikonfirmasi</td></tr>
+          <tr>
+            <td colspan="12" class="py-10 text-center text-sm text-base-content/50">Tidak ada pembayaran yang perlu dikonfirmasi.</td>
+          </tr>
         @endforelse
       </tbody>
     </table>
   </div>
-</div>
+</section>
 
-<div class="table-shell">
-  <div style="font-weight:600;margin-bottom:12px;color:#7b1a2e">Upload Bukti Pembayaran (Jika ada yang belum upload)</div>
-  <p style="color:#666;font-size:14px;margin-bottom:16px">Gunakan form ini untuk menambahkan bukti pembayaran manual jika tamu mengirim via email/WA</p>
-  
-  <form action="#" method="POST" enctype="multipart/form-data" id="uploadPaymentForm" style="display:flex;gap:12px;align-items:end">
+<section class="soft-card mt-6 p-5 sm:p-6">
+  <span class="section-kicker">Bukti Pembayaran</span>
+  <h2 class="mt-2 text-base font-semibold text-primary">Upload manual</h2>
+  <p class="mt-1 text-sm text-base-content/60">Gunakan form ini jika tamu mengirim bukti bayar via email atau WhatsApp.</p>
+
+  <form action="#" method="POST" enctype="multipart/form-data" id="uploadPaymentForm" class="mt-5 flex flex-wrap items-end gap-4">
     @csrf
-    <div>
-      <label style="display:block;margin-bottom:4px;font-size:14px;font-weight:600">Pilih Booking:</label>
-      <select name="booking_id" required style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;min-width:200px">
+    <label class="block min-w-[220px] flex-1">
+      <span class="mb-1.5 block text-xs font-medium text-base-content/70">Pilih Booking</span>
+      <select name="booking_id" required class="select select-bordered w-full">
         <option value="">-- Pilih --</option>
-        @foreach($pengunjungs as $p)
-          <option value="{{ $p->id }}">{{ $p->nama }} - {{ $p->check_in }}</option>
+        @foreach($pengunjungs as $guest)
+          <option value="{{ $guest->id }}">{{ $guest->nama }} — {{ $guest->check_in }}</option>
         @endforeach
       </select>
-    </div>
-    <div>
-      <label style="display:block;margin-bottom:4px;font-size:14px;font-weight:600">File Bukti:</label>
-      <input type="file" name="bukti_pembayaran" required accept=".jpg,.jpeg,.png,.pdf" style="padding:8px;border:1px solid #ddd;border-radius:6px">
-    </div>
-    <button type="submit" class="pill-btn" style="background:var(--brand);color:#fff">Upload</button>
+    </label>
+
+    <label class="block min-w-[220px] flex-1">
+      <span class="mb-1.5 block text-xs font-medium text-base-content/70">File Bukti</span>
+      <input type="file" name="bukti_pembayaran" required accept=".jpg,.jpeg,.png,.pdf" class="file-input file-input-bordered w-full">
+    </label>
+
+    <button type="submit" class="btn btn-primary rounded-full normal-case">Upload</button>
   </form>
-</div>
+</section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('uploadPaymentForm');
-  if (!form) return;
-  form.addEventListener('submit', function(e) {
-    const sel = form.querySelector('select[name="booking_id"]');
-    const bookingId = sel ? sel.value : '';
-    if (!bookingId) {
-      e.preventDefault();
-      alert('Silakan pilih booking terlebih dahulu');
-      return false;
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('form[action*="approve"]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Konfirmasi Pembayaran?',
+        text: 'Booking akan disetujui dan tamu akan mendapat konfirmasi.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#16a34a',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Konfirmasi!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) form.submit();
+      });
+    });
+  });
+
+  document.querySelectorAll('form[action*="reject"]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Tolak Booking?',
+        text: 'Booking akan ditolak dan tamu akan mendapat pemberitahuan.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Tolak!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) form.submit();
+      });
+    });
+  });
+
+  const uploadForm = document.getElementById('uploadPaymentForm');
+  uploadForm?.addEventListener('submit', (event) => {
+    const select = uploadForm.querySelector('select[name="booking_id"]');
+    if (!select?.value) {
+      event.preventDefault();
+      alert('Silakan pilih booking terlebih dahulu.');
+      return;
     }
-    form.action = '/admin/pengunjung/' + bookingId + '/upload-payment';
+    uploadForm.action = '/admin/pengunjung/' + select.value + '/upload-payment';
   });
 });
 </script>
-
 @endsection

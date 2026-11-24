@@ -1,268 +1,129 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Beranda</title>
-  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fafafa;
-      margin: 0;
-      padding: 30px;
-      color: #333;
-    }
+@extends('layout')
 
-    h2, h3 {
-      color: #b1193f;
-    }
+@section('content')
+<div class="mb-8">
+  <span class="section-kicker">Konten Situs</span>
+  <div class="mt-2 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="section-heading">Edit Beranda</h1>
+      <p class="mt-2 text-sm text-base-content/60">Perbarui informasi kontak dan teks slider yang tampil di halaman utama.</p>
+    </div>
+    <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost btn-sm rounded-full normal-case border border-base-300">
+      <i class="fas fa-arrow-left text-xs"></i> Kembali
+    </a>
+  </div>
+</div>
 
-    form {
-      background: white;
-      border-radius: 12px;
-      padding: 40px;
-      width: 100%;
-      max-width: 1200px;
-      margin: auto;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+@if(session('success'))
+  <div class="alert alert-success mb-6 text-sm">{{ session('success') }}</div>
+@endif
 
-    label {
-      font-weight: bold;
-      min-width: 100px;
-      white-space: nowrap;
-    }
+<form id="form-beranda" action="{{ route('beranda.update', 1) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+  @csrf
+  @method('PUT')
 
-    input[type="text"],
-    input[type="email"],
-    input[type="file"],
-    textarea {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      transition: opacity 0.3s, border-color 0.3s;
-      flex: 1;
-      width: 100%;
-    }
+  <section class="soft-card p-6">
+    <h2 class="text-sm font-semibold text-primary">Informasi Kontak</h2>
+    <p class="mt-1 text-xs text-base-content/60">Ubah field lalu klik Simpan pada baris yang bersangkutan.</p>
 
-    input:focus {
-      border-color: #b1193f;
-      outline: none;
-    }
+    <div class="mt-5 grid gap-4 lg:grid-cols-2">
+      @foreach([
+        'instagram' => 'Instagram',
+        'email' => 'Email',
+        'whatsapp' => 'WhatsApp',
+        'location' => 'Lokasi',
+        'maps_link' => 'Tautan Maps',
+      ] as $field => $label)
+        <div>
+          <label for="{{ $field }}" class="mb-1.5 block text-xs font-medium text-base-content/70">{{ $label }}</label>
+          <div class="flex gap-2">
+            <input id="{{ $field }}" name="{{ $field }}" type="{{ $field == 'email' ? 'email' : 'text' }}" value="{{ $data->$field }}" class="input input-bordered w-full" style="opacity: 0.5;">
+            <button type="button" class="btn btn-primary btn-sm shrink-0 rounded-full normal-case" data-field="{{ $field }}">Simpan</button>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </section>
 
-    .success {
-      color: green;
-      margin-bottom: 20px;
-    }
+  @foreach([1, 2] as $index)
+    @php
+      $imageField = "slider{$index}_image";
+      $textField = "slider{$index}_text";
+      $image = $data->$imageField;
+    @endphp
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px 30px;
-      width: 100%;
-    }
+    <section class="soft-card p-6">
+      <span class="section-kicker">Slider {{ $index }}</span>
 
-    .input-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+      <div class="mt-4 grid gap-5 lg:grid-cols-3">
+        <div>
+          <span class="mb-1.5 block text-xs font-medium text-base-content/70">Gambar Saat Ini</span>
+          @if($image)
+            <img src="{{ asset($image) }}" alt="Slider {{ $index }}" class="h-32 w-full rounded-xl border border-base-200 object-cover">
+          @else
+            <div class="flex h-32 items-center justify-center rounded-xl border border-dashed border-base-300 text-xs text-base-content/40">Belum ada gambar</div>
+          @endif
+        </div>
 
-    .full-row {
-      margin-top: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        <div>
+          <label for="{{ $imageField }}" class="mb-1.5 block text-xs font-medium text-base-content/70">Gambar Baru</label>
+          <input id="{{ $imageField }}" type="file" name="{{ $imageField }}" class="file-input file-input-bordered w-full">
+        </div>
 
-    /* Tombol Simpan bergaya modern */
-    .btn-save {
-      background: linear-gradient(135deg, #b1193f, #d6295b);
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 5px rgba(177,25,63,0.3);
-    }
+        <div>
+          <label for="{{ $textField }}" class="mb-1.5 block text-xs font-medium text-base-content/70">Teks Slider</label>
+          <textarea id="{{ $textField }}" name="{{ $textField }}" rows="3" class="textarea textarea-bordered w-full" style="opacity: 0.5;">{{ $data->$textField }}</textarea>
+        </div>
+      </div>
 
-    .btn-save:hover {
-      background: linear-gradient(135deg, #8e1332, #b1193f);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(177,25,63,0.4);
-    }
+      <div class="mt-4 flex justify-end">
+        <button type="button" class="btn btn-primary btn-sm rounded-full normal-case" data-field="slider{{ $index }}">Simpan Slider {{ $index }}</button>
+      </div>
+    </section>
+  @endforeach
+</form>
 
-    .btn-save svg {
-      width: 16px;
-      height: 16px;
-      fill: white;
-    }
+<script>
+  const form = document.getElementById('form-beranda');
+  const fields = [
+    'instagram', 'email', 'whatsapp', 'location', 'maps_link',
+    'slider1_text', 'slider2_text',
+  ];
 
-    .slider-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
+  const oldValues = {};
+  fields.forEach((id) => {
+    const element = document.getElementById(id);
+    if (element) oldValues[id] = element.value;
+  });
 
-    @media (max-width: 768px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
+  fields.forEach((id) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.addEventListener('input', () => {
+      element.style.opacity = element.value !== oldValues[id] ? '1' : '0.5';
+    });
+  });
+
+  document.querySelectorAll('.btn-save, [data-field]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const field = button.dataset.field;
+      if (!field) return;
+
+      let message;
+      if (field.startsWith('slider')) {
+        message = `Simpan perubahan pada ${field.replace('_', ' ')}?`;
+      } else {
+        const element = document.getElementById(field);
+        const newValue = element?.value.trim();
+        if (newValue === oldValues[field]) {
+          alert(`Tidak ada perubahan pada ${field}.`);
+          return;
+        }
+        message = `Ubah ${field.replace('_', ' ')} menjadi "${newValue}"?`;
       }
-    }
-  </style>
-</head>
-<body>
-  <!-- Fixed top-right back button -->
-  <a id="back-top-right" href="{{ route('admin.dashboard') }}" class="btn-save" style="position:fixed;top:18px;right:18px;background:#6b7280;z-index:99999;padding:8px 12px;font-size:14px;box-shadow:0 6px 12px rgba(0,0,0,.12)">Kembali</a>
 
-  <h2>Update Konten Beranda</h2>
-
-  @if(session('success'))
-    <div class="success">{{ session('success') }}</div>
-  @endif
-
-  <form id="form-beranda" action="{{ route('beranda.update', 1) }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    @method('PUT')
-
-    <!-- Bagian Kontak -->
-    <div class="grid-2">
-      <div>
-        <div class="input-row">
-          <label for="instagram">Instagram:</label>
-          <input type="text" id="instagram" name="instagram" value="{{ $data->instagram }}" style="opacity: 0.5;">
-          <button type="button" class="btn-save" data-field="instagram">
-            
-            Simpan
-          </button>
-        </div>
-
-        <div class="input-row">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" value="{{ $data->email }}" style="opacity: 0.5;">
-          <button type="button" class="btn-save" data-field="email">
-            
-            Simpan
-          </button>
-        </div>
-      </div>
-
-      <div>
-        <div class="input-row">
-          <label for="whatsapp">WhatsApp:</label>
-          <input type="text" id="whatsapp" name="whatsapp" value="{{ $data->whatsapp }}" style="opacity: 0.5;">
-          <button type="button" class="btn-save" data-field="whatsapp">
-            
-            Simpan
-          </button>
-        </div>
-
-        <div class="input-row">
-          <label for="location">Location:</label>
-          <input type="text" id="location" name="location" value="{{ $data->location }}" style="opacity: 0.5;">
-          <button type="button" class="btn-save" data-field="location">
-            
-            Simpan
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="full-row">
-      <label for="maps_link">Maps Link:</label>
-      <input type="text" id="maps_link" name="maps_link" value="{{ $data->maps_link }}" style="opacity: 0.5;">
-      <button type="button" class="btn-save" data-field="maps_link">
-        
-        Simpan
-      </button>
-    </div>
-
-    <!-- SLIDER 1 -->
-    <h3>Slider 1</h3>
-    @if($data->slider1_image)
-      <img src="{{ asset($data->slider1_image) }}" width="150">
-    @endif
-    <div class="slider-row">
-      <label>Gambar Baru:</label>
-      <input type="file" name="slider1_image" id="slider1_image">
-      <label>Teks Slider 1:</label>
-      <textarea name="slider1_text" rows="3" style="width: 100%;">{{ $data->slider1_text }}</textarea>
-      <button type="button" class="btn-save" data-field="slider1">
-        
-        Simpan
-      </button>
-    </div>
-
-    <!-- SLIDER 2 -->
-    <h3>Slider 2</h3>
-    @if($data->slider2_image)
-      <img src="{{ asset($data->slider2_image) }}" width="150">
-    @endif
-    <div class="slider-row">
-      <label>Gambar Baru:</label>
-      <input type="file" name="slider2_image" id="slider2_image">
-      <label>Teks Slider 2:</label>
-      <textarea name="slider2_text" rows="3" style="width: 100%;">{{ $data->slider2_text }}</textarea>
-      <button type="button" class="btn-save" data-field="slider2">
-        
-        Simpan
-      </button>
-    </div>
-  </form>
-
-  <script>
-    const form = document.getElementById('form-beranda');
-    const fields = [
-      'instagram', 'email', 'whatsapp', 'location', 'maps_link',
-      'slider1_text', 'slider2_text'
-    ];
-
-    const oldValues = {};
-    fields.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) oldValues[id] = el.value;
+      if (confirm(message)) form.submit();
     });
-
-    // Ubah opacity saat mengetik
-    fields.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('input', () => {
-        el.style.opacity = el.value !== oldValues[id] ? '1' : '0.5';
-      });
-    });
-
-    // Tombol simpan per bagian
-    document.querySelectorAll('.btn-save').forEach(button => {
-      button.addEventListener('click', () => {
-        const field = button.dataset.field;
-        let confirmMessage = '';
-
-        if (field.startsWith('slider')) {
-          confirmMessage = `Apakah benar ingin menyimpan perubahan pada ${field.replace('_', ' ')}?`;
-        } else {
-          const el = document.getElementById(field);
-          const newVal = el?.value?.trim();
-          const oldVal = oldValues[field];
-          if (newVal === oldVal) {
-            alert(`Tidak ada perubahan pada ${field}.`);
-            return;
-          }
-          confirmMessage = `Apakah benar ingin merubah ${field.replace('_', ' ')} menjadi "${newVal}"?`;
-        }
-
-        if (confirm(confirmMessage)) {
-          form.submit();
-        }
-      });
-    });
-  </script>
-</body>
-</html>
+  });
+</script>
+@endsection

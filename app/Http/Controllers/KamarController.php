@@ -19,7 +19,19 @@ class KamarController extends Controller
         } else {
             $kamars = Kamar::orderBy('nomor_kamar')->get();
         }
-        return view('admin.kamar', compact('kamars'));
+        $jenisKamars = Kamar::query()
+            ->whereNotNull('jenis_kamar')
+            ->selectRaw('jenis_kamar, MAX(harga) as harga')
+            ->groupBy('jenis_kamar')
+            ->orderBy('jenis_kamar')
+            ->get()
+            ->map(fn ($row) => [
+                'jenis' => $row->jenis_kamar,
+                'harga' => $row->harga,
+                'foto' => Kamar::fotoJenisPath($row->jenis_kamar),
+            ]);
+
+        return view('admin.kamar', compact('kamars', 'jenisKamars'));
     }
 
     public function create(){ return view('admin.kamar.create'); }
@@ -44,7 +56,58 @@ class KamarController extends Controller
         return redirect()->route('kamar.index')->with('success','Kamar ditambahkan');
     }
 
-    public function edit($id){ $kamar = Kamar::findOrFail($id); return view('admin.kamar.edit', compact('kamar')); }
+    public function edit($id)
+    {
+        $kamar = Kamar::findOrFail($id);
+
+        $jenisKamars = Kamar::query()
+            ->whereNotNull('jenis_kamar')
+            ->distinct()
+            ->orderBy('jenis_kamar')
+            ->pluck('jenis_kamar')
+            ->map(function ($jenis) {
+                return [
+                    'jenis' => $jenis,
+                    'harga' => Kamar::where('jenis_kamar', $jenis)->value('harga'),
+                    'foto' => Kamar::fotoJenisPath($jenis),
+                ];
+            });
+
+        return view('admin.kamar.edit', compact('kamar', 'jenisKamars'));
+    }
+
+    /** Update harga & foto untuk semua kamar dengan jenis yang sama. */
+    public function updateJenis(Request $r)
+    {
+        $validated = $r->validate([
+            'jenis_kamar' => 'required|string|max:100',
+            'harga' => 'nullable|numeric|min:0',
+            'foto' => 'nullable|image|mimes:jpg,jpeg|max:4096',
+        ]);
+
+        $jenis = trim($validated['jenis_kamar']);
+        $tersedia = Kamar::query()->whereNotNull('jenis_kamar')->distinct()->pluck('jenis_kamar')->all();
+
+        if (!in_array($jenis, $tersedia, true)) {
+            return back()->with('error', 'Jenis kamar tidak dikenal.');
+        }
+
+        if (isset($validated['harga'])) {
+            Kamar::where('jenis_kamar', $jenis)->update(['harga' => $validated['harga']]);
+        }
+
+        if ($r->hasFile('foto')) {
+            $existingPath = Kamar::fotoJenisPath($jenis);
+            $extension = $existingPath
+                ? pathinfo($existingPath, PATHINFO_EXTENSION)
+                : strtolower($r->file('foto')->getClientOriginalExtension());
+
+            $fileName = Kamar::fotoJenisNama($jenis) . '.' . $extension;
+            $r->file('foto')->move(public_path('images'), $fileName);
+        }
+
+        return back()->with('success', "Harga & foto jenis kamar {$jenis} berhasil diperbarui.");
+    }
 
     public function update(Request $r, $id){
         $r->validate(['jenis_kamar'=>'required']);

@@ -164,10 +164,10 @@ class PengunjungController extends Controller
         return back()->with('success','Booking telah di-approve dan status pembayaran diperbarui.');
     }
 
-    public function create(){
-        $kamars = Kamar::where('status','kosong')->get();
-        return view('admin.pengunjung.create', compact('kamars'));
-    }
+    // public function create(){
+    //     $kamars = Kamar::where('status','kosong')->get();
+    //     return view('admin.pengunjung.create', compact('kamars'));
+    // }
 
     public function store(Request $r){
         $r->validate([
