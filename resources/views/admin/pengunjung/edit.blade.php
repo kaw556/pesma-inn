@@ -65,22 +65,41 @@
       @endphp
 
       <div>
-        <label for="kode_kamar" class="mb-1.5 block text-xs font-medium text-base-content/70">Kode Kamar</label>
-        <select id="kode_kamar" name="kode_kamar[]" multiple class="select select-bordered h-auto min-h-36 w-full py-2">
-          @foreach($kamars as $room)
-            @php
-              $isSelected = in_array($room->kode_kamar, $selectedRooms);
-              $isAvailable = $room->status === 'kosong' || $isSelected;
-            @endphp
-            <option value="{{ $room->kode_kamar }}" {{ $isSelected ? 'selected' : '' }} {{ $isAvailable ? '' : 'disabled' }}>
-              {{ $room->kode_kamar }} — {{ $room->jenis_kamar }} — {{ $room->gedung }}
-              @if(!$isAvailable) (Terisi) @endif
-              @if($isSelected) (Terpilih) @endif
-            </option>
-          @endforeach
-        </select>
+        <span class="mb-1.5 block text-xs font-medium text-base-content/70">Kode Kamar</span>
+
+        <details id="roomDropdown" class="dropdown w-full">
+          <summary class="select select-bordered flex w-full items-center justify-between gap-2 font-normal">
+            <span id="roomSummary">Pilih kamar…</span>
+            <i class="fas fa-chevron-down text-xs opacity-50"></i>
+          </summary>
+
+          <div class="dropdown-content z-20 mt-2 w-full rounded-box border border-base-200 bg-base-100 p-3 shadow-xl">
+            <input id="roomSearch" type="search" placeholder="Cari kode / jenis kamar" class="input input-bordered input-sm w-full">
+
+            <div id="roomList" class="mt-2 max-h-64 space-y-1 overflow-y-auto">
+              @foreach($kamars as $room)
+                @php
+                  $isSelected = in_array($room->kode_kamar, $selectedRooms);
+                  $isAvailable = $room->status === 'kosong' || $isSelected;
+                @endphp
+                <label class="room-option flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-sm hover:bg-base-200/60 {{ $isAvailable ? '' : 'opacity-50' }}">
+                  <input type="checkbox" name="kode_kamar[]" value="{{ $room->kode_kamar }}" class="checkbox checkbox-primary checkbox-sm" {{ $isSelected ? 'checked' : '' }} {{ $isAvailable ? '' : 'disabled' }}>
+                  <span class="flex-1">
+                    <span class="font-medium">{{ $room->kode_kamar }}</span>
+                    <span class="text-xs text-base-content/50">— {{ $room->jenis_kamar }} · {{ $room->gedung }}</span>
+                  </span>
+                  @if(!$isAvailable)
+                    <span class="text-[10px] text-error">Terisi</span>
+                  @endif
+                </label>
+              @endforeach
+            </div>
+          </div>
+        </details>
+
+        <div id="selectedRooms" class="mt-2 flex flex-wrap gap-2"></div>
         <p class="mt-1.5 text-xs text-base-content/50">
-          Tekan <strong>Ctrl</strong> (Windows) atau <strong>Cmd</strong> (Mac) untuk memilih beberapa kamar.
+          Klik dropdown untuk memilih beberapa kamar.
           <span class="font-semibold text-success">{{ $kamars->where('status', 'kosong')->count() }}</span> kamar kosong tersedia.
         </p>
       </div>
@@ -117,4 +136,45 @@
     </form>
   </section>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const summary = document.getElementById('roomSummary');
+  const chips = document.getElementById('selectedRooms');
+  const search = document.getElementById('roomSearch');
+  const checkboxes = Array.from(document.querySelectorAll('#roomList input[name="kode_kamar[]"]'));
+
+  function render() {
+    const selected = checkboxes.filter((box) => box.checked);
+
+    summary.textContent = selected.length
+      ? `${selected.length} kamar dipilih`
+      : 'Pilih kamar…';
+
+    chips.innerHTML = '';
+    selected.forEach((box) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'inline-flex items-center gap-1 rounded-full bg-secondary/10 px-3 py-1 text-xs font-medium text-secondary';
+      chip.textContent = box.value + ' ✕';
+      chip.addEventListener('click', () => {
+        box.checked = false;
+        render();
+      });
+      chips.appendChild(chip);
+    });
+  }
+
+  checkboxes.forEach((box) => box.addEventListener('change', render));
+
+  search?.addEventListener('input', () => {
+    const query = search.value.trim().toLowerCase();
+    document.querySelectorAll('.room-option').forEach((option) => {
+      option.classList.toggle('hidden', !option.textContent.toLowerCase().includes(query));
+    });
+  });
+
+  render();
+});
+</script>
 @endsection

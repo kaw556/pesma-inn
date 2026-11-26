@@ -6,7 +6,7 @@
   <div class="mt-2 flex flex-wrap items-end justify-between gap-4">
     <div>
       <h1 class="section-heading">Edit Beranda</h1>
-      <p class="mt-2 text-sm text-base-content/60">Perbarui informasi kontak dan teks slider yang tampil di halaman utama.</p>
+      <p class="mt-2 text-sm text-base-content/60">Perbarui informasi kontak dan konten section hero di halaman utama.</p>
     </div>
     <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost btn-sm rounded-full normal-case border border-base-300">
       <i class="fas fa-arrow-left text-xs"></i> Kembali
@@ -45,49 +45,42 @@
     </div>
   </section>
 
-  @foreach([1, 2] as $index)
-    @php
-      $imageField = "slider{$index}_image";
-      $textField = "slider{$index}_text";
-      $image = $data->$imageField;
-    @endphp
+  <section class="soft-card p-6">
+    <span class="section-kicker">Hero</span>
+    <h2 class="mt-2 text-lg font-semibold text-primary">Editor Section Hero</h2>
+    <p class="mt-1 text-xs text-base-content/60">Atur gambar latar dan judul yang tampil di section hero halaman utama.</p>
 
-    <section class="soft-card p-6">
-      <span class="section-kicker">Slider {{ $index }}</span>
-
-      <div class="mt-4 grid gap-5 lg:grid-cols-3">
-        <div>
-          <span class="mb-1.5 block text-xs font-medium text-base-content/70">Gambar Saat Ini</span>
-          @if($image)
-            <img src="{{ asset($image) }}" alt="Slider {{ $index }}" class="h-32 w-full rounded-xl border border-base-200 object-cover">
-          @else
-            <div class="flex h-32 items-center justify-center rounded-xl border border-dashed border-base-300 text-xs text-base-content/40">Belum ada gambar</div>
-          @endif
-        </div>
-
-        <div>
-          <label for="{{ $imageField }}" class="mb-1.5 block text-xs font-medium text-base-content/70">Gambar Baru</label>
-          <input id="{{ $imageField }}" type="file" name="{{ $imageField }}" class="file-input file-input-bordered w-full">
-        </div>
-
-        <div>
-          <label for="{{ $textField }}" class="mb-1.5 block text-xs font-medium text-base-content/70">Teks Slider</label>
-          <textarea id="{{ $textField }}" name="{{ $textField }}" rows="3" class="textarea textarea-bordered w-full" style="opacity: 0.5;">{{ $data->$textField }}</textarea>
-        </div>
+    <div class="mt-4 grid gap-5 lg:grid-cols-3">
+      <div>
+        <span class="mb-1.5 block text-xs font-medium text-base-content/70">Gambar Saat Ini</span>
+        @if($data->slider1_image)
+          <img src="{{ asset($data->slider1_image) }}" alt="Hero Pesma Inn" class="h-32 w-full rounded-xl border border-base-200 object-cover">
+        @else
+          <div class="flex h-32 items-center justify-center rounded-xl border border-dashed border-base-300 text-xs text-base-content/40">Belum ada gambar</div>
+        @endif
       </div>
 
-      <div class="mt-4 flex justify-end">
-        <button type="button" class="btn btn-primary btn-sm rounded-full normal-case" data-field="slider{{ $index }}">Simpan Slider {{ $index }}</button>
+      <div>
+        <label for="slider1_image" class="mb-1.5 block text-xs font-medium text-base-content/70">Gambar Hero Baru</label>
+        <input id="slider1_image" type="file" name="slider1_image" class="file-input file-input-bordered w-full">
       </div>
-    </section>
-  @endforeach
+
+      <div>
+        <label for="slider1_text" class="mb-1.5 block text-xs font-medium text-base-content/70">Judul Hero</label>
+        <textarea id="slider1_text" name="slider1_text" rows="3" class="textarea textarea-bordered w-full" style="opacity: 0.5;">{{ $data->slider1_text }}</textarea>
+      </div>
+    </div>
+
+    <div class="mt-4 flex justify-end">
+      <button type="button" class="btn btn-primary btn-sm rounded-full normal-case" data-field="hero">Simpan Hero</button>
+    </div>
+  </section>
 </form>
 
 <script>
   const form = document.getElementById('form-beranda');
   const fields = [
-    'instagram', 'email', 'whatsapp', 'location', 'maps_link',
-    'slider1_text', 'slider2_text',
+    'instagram', 'email', 'whatsapp', 'location', 'maps_link', 'slider1_text',
   ];
 
   const oldValues = {};
@@ -104,14 +97,14 @@
     });
   });
 
-  document.querySelectorAll('.btn-save, [data-field]').forEach((button) => {
+  document.querySelectorAll('[data-field]').forEach((button) => {
     button.addEventListener('click', () => {
       const field = button.dataset.field;
       if (!field) return;
 
       let message;
-      if (field.startsWith('slider')) {
-        message = `Simpan perubahan pada ${field.replace('_', ' ')}?`;
+      if (field === 'hero') {
+        message = 'Simpan perubahan pada section hero?';
       } else {
         const element = document.getElementById(field);
         const newValue = element?.value.trim();

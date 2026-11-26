@@ -77,7 +77,7 @@ class BerandaController extends Controller
     public function edit()
     {
         $data = DB::table('beranda')->where('id', 1)->first();
-        return view('beranda', compact('data'));
+        return view('admin.beranda.edit', compact('data'));
     }
 
     public function update(Request $request, $id)
@@ -89,17 +89,11 @@ class BerandaController extends Controller
             'location'    => $request->location,
             'maps_link'   => $request->maps_link,
             'slider1_text'=> $request->slider1_text,
-            'slider2_text'=> $request->slider2_text,
         ];
 
         if ($request->hasFile('slider1_image')) {
             $path = $request->file('slider1_image')->store('img', 'public');
             $data['slider1_image'] = 'storage/' . $path;
-        }
-
-        if ($request->hasFile('slider2_image')) {
-            $path = $request->file('slider2_image')->store('img', 'public');
-            $data['slider2_image'] = 'storage/' . $path;
         }
 
         DB::table('beranda')->where('id', $id)->update($data);

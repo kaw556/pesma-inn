@@ -58,8 +58,11 @@ Route::get('/booking/payment/{id}', [BookingController::class, 'payment'])
 Route::post('/booking/payment/{id}/upload', [BookingController::class, 'uploadBuktiPembayaran'])
     ->name('booking.payment.upload');
 
-// Route::get('/booking/success/{id}', [BookingController::class, 'success'])
-//     ->name('booking.success');
+Route::post('/booking/payment/cash/{id}', [BookingController::class, 'confirmCash'])
+    ->name('booking.payment.cash');
+
+Route::get('/booking/success/{id}', [BookingController::class, 'success'])
+    ->name('booking.success');
 
 Route::post('/booking/success/{id}', [BookingController::class, 'success'])
     ->name('booking.success');
@@ -99,8 +102,8 @@ Route::middleware([\App\Http\Middleware\AdminAuth::class])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
     // Beranda Management (Admin only)
-    Route::get('/beranda', [BerandaController::class, 'edit'])->name('beranda.edit');
-    Route::put('/beranda/{id}', [BerandaController::class, 'update'])->name('beranda.update');
+    Route::get('/beranda/edit', [BerandaController::class, 'edit'])->name('beranda.edit');
+    Route::put('/beranda/edit/{id}', [BerandaController::class, 'update'])->name('beranda.update');
 
     /*
     |--------------------------------------------------------------------------
@@ -130,6 +133,7 @@ Route::middleware([\App\Http\Middleware\AdminAuth::class])->group(function () {
     Route::get('/admin/pembayaran/konfirmasi', [PengunjungController::class, 'konfirmasiPembayaran'])->name('pembayaran.konfirmasi');
     Route::post('/admin/pengunjung/{id}/upload-payment', [PengunjungController::class, 'uploadPayment'])->name('pengunjung.upload_payment');
     Route::post('/admin/pengunjung/{id}/approve', [PengunjungController::class, 'approve'])->name('pengunjung.approve');
+    Route::post('/admin/pengunjung/{id}/approve-cash', [PengunjungController::class, 'approveCash'])->name('pengunjung.approve.cash');
     Route::post('/admin/pengunjung/{id}/reject', [PengunjungController::class, 'reject'])->name('pengunjung.reject');
     Route::get('/admin/pengunjung/tambah', [PengunjungController::class, 'create'])->name('pengunjung.create');
     Route::post('/admin/pengunjung/simpan', [PengunjungController::class, 'store'])->name('pengunjung.store');
@@ -156,8 +160,6 @@ Route::middleware([\App\Http\Middleware\AdminAuth::class])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    // Route::post('/booking/payment/{id}', [BookingController::class, 'uploadBuktiPembayaran'])->name('booking.payment.upload');
-    Route::post('/booking/payment/cash/{id}', [BookingController::class, 'confirmCash'])->name('booking.payment.cash');
     Route::get('/admin/report/pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('report.pdf');
     Route::get('/admin/report/csv', [\App\Http\Controllers\ReportController::class, 'exportCsv'])->name('report.csv');
     Route::get('/admin/report/monthly', [\App\Http\Controllers\ReportController::class, 'monthly'])->name('report.monthly');

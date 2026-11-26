@@ -63,7 +63,6 @@
             $phone = preg_replace('/[^0-9+]/', '', $guest->no_telp_pic ?? $guest->no_telp ?? '');
             $wa = $phone ? 'https://wa.me/' . ltrim($phone, '0') : null;
           @endphp
-
           <tr class="hover:bg-base-200/50">
             <td class="text-xs text-base-content/50">{{ $loop->iteration }}</td>
             <td>
@@ -81,14 +80,14 @@
                 {{ ucfirst($guest->jenis_tamu) }}
               </span>
             </td>
-            <td class="text-sm font-medium text-primary">{{ $guest->metode_pembayaran ?? '-' }}</td>
+            <td class="text-xs font-medium text-primary">{{ $guest->metode_pembayaran ?? '-' }}</td>
             <td class="text-xs">{{ $guest->check_in }}<br>s/d {{ $guest->check_out }}</td>
             <td class="text-xs">{{ $guest->kode_kamar ?? '-' }}</td>
             <td class="text-xs font-medium">{{ implode(', ', $roomTypes) ?: '-' }}</td>
             <td>
               @if($wa)
-                <a href="{{ $wa }}" target="_blank" rel="noopener" class="btn btn-ghost btn-xs rounded-full normal-case text-[#25D366] hover:bg-[#25D366]/10" aria-label="Chat WhatsApp">
-                  <i class="fab fa-whatsapp text-sm"></i>
+                <a href="{{ $wa }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm font-medium rounded-full normal-case" aria-label="Chat WhatsApp">
+                  <i class="fa-brands fa-square-whatsapp text-[#25D366] hover:bg-[#25D366]/10"></i> {{ $guest->no_telp_pic ?? $guest->no_telp ?? '-' }}
                 </a>
               @else
                 <span class="text-xs">{{ $guest->no_telp ?? '-' }}</span>
@@ -122,16 +121,35 @@
               {{ $guest->total_harga ? 'Rp ' . number_format($guest->total_harga, 0, ',', '.') : '-' }}
             </td>
             <td>
-              <div class="flex flex-wrap gap-2">
-                <form action="{{ route('pengunjung.approve', $guest->id) }}" method="POST">
-                  @csrf
-                  <button type="submit" class="btn btn-success btn-xs rounded-full normal-case" {{ (!$guest->bukti_pembayaran && $guest->metode_pembayaran !== 'Via Cash') ? 'disabled title=Butuh_bukti_pembayaran' : '' }}>
-                    Konfirmasi
+              <div class="inline-flex items-center gap-2">
+                {{-- a. Validasi --}}
+                @if($guest->metode_pembayaran == 'Via Cash')
+                  <form action="{{ route('pengunjung.approve.cash', $guest->id) }}" method="POST" class="cash-form" data-total="{{ $guest->total_harga }}">
+                    @csrf
+                    <input type="hidden" name="jumlah_uang" value="{{ $guest->total_harga }}">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      <i class="fa-solid fa-check-to-slot"></i>
+                    </button>
+                  </form>
+                @else
+                <form id="approveForm{{ $guest->id }}" action="{{ route('pengunjung.approve', $guest->id) }}" method="POST" class="hidden">@csrf</form>
+                <form id="rejectForm{{ $guest->id }}" action="{{ route('pengunjung.reject', $guest->id) }}" method="POST" class="hidden">@csrf</form>
+                  <button type="button" class="btn btn-primary btn-sm validate-transfer" data-approve="approveForm{{ $guest->id }}" data-reject="rejectForm{{ $guest->id }}" data-disabled="{{ $guest->bukti_pembayaran ? '0' : '1' }}">
+                    <i class="fa-solid fa-check-to-slot"></i>
                   </button>
-                </form>
-                <form action="{{ route('pengunjung.reject', $guest->id) }}" method="POST">
-                  @csrf
-                  <button type="submit" class="btn btn-error btn-xs rounded-full normal-case">Tolak</button>
+
+                @endif
+
+                {{-- b. Cetak invoice --}}
+                <a href="{{ route('booking.voucher', $guest->id) }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm border border-base-300" aria-label="Cetak Invoice">
+                  <i class="fas fa-print"></i>
+                </a>
+
+                {{-- c. Hapus --}}
+                <form action="{{ route('pengunjung.destroy', $guest->id) }}" method="GET" class="delete-booking">
+                  <button type="submit" class="btn btn-error btn-sm">
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </form>
               </div>
             </td>
@@ -174,36 +192,71 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('form[action*="approve"]').forEach((form) => {
+  // Cash: pop-up input nominal, lalu OK / Batal
+  document.querySelectorAll('.cash-form').forEach((form) => {
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       Swal.fire({
-        title: 'Konfirmasi Pembayaran?',
-        text: 'Booking akan disetujui dan tamu akan mendapat konfirmasi.',
-        icon: 'question',
+        title: 'Konfirmasi Uang Cash',
+        input: 'number',
+        inputLabel: 'Jumlah uang diterima (Rp)',
+        inputValue: form.dataset.total,
         showCancelButton: true,
-        confirmButtonColor: '#16a34a',
+        confirmButtonColor: '#0d0b61',
         cancelButtonColor: '#64748b',
-        confirmButtonText: 'Ya, Konfirmasi!',
+        confirmButtonText: 'OK',
         cancelButtonText: 'Batal',
-        reverseButtons: true,
+        inputValidator: (value) => {
+          if (value === '' || Number(value) < 0) return 'Masukkan nominal yang valid.';
+        },
       }).then((result) => {
-        if (result.isConfirmed) form.submit();
+        if (result.isConfirmed) {
+          form.querySelector('input[name="jumlah_uang"]').value = result.value;
+          form.submit();
+        }
       });
     });
   });
 
-  document.querySelectorAll('form[action*="reject"]').forEach((form) => {
+  // Transfer / m-banking: pop-up konfirmasi atau tolak
+  document.querySelectorAll('.validate-transfer').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (button.dataset.disabled === '1') {
+        Swal.fire({ icon: 'warning', title: 'Belum ada bukti', text: 'Tamu belum mengupload bukti pembayaran.', confirmButtonColor: '#0d0b61' });
+        return;
+      }
+
+      Swal.fire({
+        title: 'Validasi Pembayaran',
+        text: 'Setujui atau tolak booking ini?',
+        icon: 'question',
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonColor: '#16a34a',
+        denyButtonColor: '#dc2626',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Konfirmasi',
+        denyButtonText: 'Tolak',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) document.getElementById(button.dataset.approve)?.submit();
+        else if (result.isDenied) document.getElementById(button.dataset.reject)?.submit();
+      });
+    });
+  });
+
+  document.querySelectorAll('.delete-booking').forEach((form) => {
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       Swal.fire({
-        title: 'Tolak Booking?',
-        text: 'Booking akan ditolak dan tamu akan mendapat pemberitahuan.',
+        title: 'Hapus Data?',
+        text: 'Data pengunjung akan dihapus.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc2626',
         cancelButtonColor: '#64748b',
-        confirmButtonText: 'Ya, Tolak!',
+        confirmButtonText: 'Ya, Hapus!',
         cancelButtonText: 'Batal',
         reverseButtons: true,
       }).then((result) => {

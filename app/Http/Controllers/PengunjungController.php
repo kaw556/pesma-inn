@@ -164,6 +164,28 @@ class PengunjungController extends Controller
         return back()->with('success','Booking telah di-approve dan status pembayaran diperbarui.');
     }
 
+    /** Admin verifikasi jumlah uang cash lalu cetak invoice. */
+    public function approveCash(Request $r, $id)
+    {
+        $booking = Pengunjung::findOrFail($id);
+
+        $validated = $r->validate([
+            'jumlah_uang' => 'required|numeric|min:0',
+        ]);
+
+        if ($booking->metode_pembayaran !== 'Via Cash') {
+            return back()->with('error', 'Booking ini bukan pembayaran cash.');
+        }
+
+        $booking->update([
+            'total_harga' => $validated['jumlah_uang'],
+            'payment_status' => 'lunas',
+            'bukti_pembayaran' => null,
+        ]);
+
+        return back()->with('success', 'Pembayaran cash dikonfirmasi. Invoice dapat dicetak lewat tombol Cetak Invoice.');
+    }
+
     // public function create(){
     //     $kamars = Kamar::where('status','kosong')->get();
     //     return view('admin.pengunjung.create', compact('kamars'));

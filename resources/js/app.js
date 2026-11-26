@@ -204,7 +204,12 @@ function initHome() {
         });
 
         button.addEventListener('click', (event) => {
-            if (button.dataset.locked !== 'true') return;
+            if (button.dataset.locked !== 'true') {
+                // Swiper menekan pointerdown default, jadi trigger tidak pernah dapat fokus
+                // dan dropdown CSS (:focus-within) tidak terbuka. Fokuskan eksplisit.
+                button.focus();
+                return;
+            }
 
             event.preventDefault();
             event.stopPropagation();

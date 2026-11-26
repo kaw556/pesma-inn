@@ -1,251 +1,202 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Berhasil</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+@extends('layouts.app')
 
-<style>
-    :root {
-        --peach: #f1cfc4;
-        --primary: #a0203c;
-        --light: #fbf7f6;
-        --white: #fff;
-        --success: #10b981;
-    }
+@section('title', 'Booking Berhasil · Pesma Inn')
 
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
+@section('content')
+@php
+  $isCash = ($pengunjung->metode_pembayaran ?? '') === 'Via Cash';
+  $isConfirmed = in_array($pengunjung->payment_status, ['lunas', 'paid']);
 
-    body {
-        background: var(--light) !important;
-        font-family: "Segoe UI", sans-serif;
-    }
+  $statusText = $isCash && !$isConfirmed
+    ? 'Menunggu Konfirmasi Admin'
+    : ($isCash ? 'Lunas · Bayar di Tempat' : ($isConfirmed ? 'Lunas' : 'Menunggu Konfirmasi'));
 
-    .container {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
+  $buktiDetails = [
+    ['Nama', $pengunjung->jenis_tamu == 'corporate' ? ($pengunjung->nama_pic ?? $pengunjung->nama) : $pengunjung->nama],
+    ['Jenis Booking', ucfirst($pengunjung->jenis_tamu)],
+    ['Metode Pembayaran', $pengunjung->metode_pembayaran ?? '-'],
+    ['Check-in', \Carbon\Carbon::parse($pengunjung->check_in)->format('d M Y')],
+    ['Check-out', \Carbon\Carbon::parse($pengunjung->check_out)->format('d M Y')],
+    ['Total Pembayaran', 'Rp ' . number_format($totalPembayaran, 0, ',', '.')],
+    ['Tanggal Booking', \Carbon\Carbon::parse($pengunjung->created_at)->format('d M Y, H:i')],
+  ];
+@endphp
 
-    .success-card {
-        background: var(--white);
-        border: 3px solid var(--primary);
-        border-radius: 20px;
-        padding: 40px;
-        max-width: 500px;
-        width: 90%;
-        box-shadow: 0 10px 30px rgba(160, 32, 60, 0.15);
-        text-align: center;
-        animation: slideUp 0.5s ease-out;
-        margin: auto;
-    }
-
-    @keyframes slideUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .success-icon {
-        width: 90px;
-        height: 90px;
-        background: var(--success);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 24px;
-        animation: scaleIn 0.6s ease-out 0.2s both;
-        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
-    }
-
-    @keyframes scaleIn {
-        from { transform: scale(0); }
-        to { transform: scale(1); }
-    }
-
-    .success-icon svg {
-        width: 50px;
-        height: 50px;
-        stroke: white;
-        stroke-width: 3;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        fill: none;
-        stroke-dasharray: 100;
-        stroke-dashoffset: 100;
-        animation: drawCheck 0.8s ease-out 0.5s forwards;
-    }
-
-    @keyframes drawCheck {
-        to { stroke-dashoffset: 0; }
-    }
-
-    .success-card h2 {
-        font-size: 28px;
-        font-weight: 800;
-        color: #111;
-        margin-bottom: 12px;
-    }
-
-    .subtitle {
-        color: #333;
-        font-size: 14px;
-        margin-bottom: 30px;
-        line-height: 1.6;
-    }
-
-    .info-grid {
-        background: var(--peach);
-        border-radius: 14px;
-        padding: 24px;
-        margin-bottom: 30px;
-        text-align: left;
-        border: 2px solid rgba(160, 32, 60, 0.2);
-    }
-
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid rgba(160, 32, 60, 0.15);
-        gap: 15px;
-    }
-
-    .info-label {
-        font-weight: 600;
-        font-size: 14px;
-        color: #333;
-    }
-
-    .info-value {
-        font-weight: 700;
-        font-size: 14px;
-        color: #111;
-        text-align: right;
-    }
-
-    .btn-home {
-        background: var(--primary);
-        color: var(--white);
-        border: none;
-        padding: 14px 32px;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 16px;
-        width: 100%;
-        display: inline-block;
-        transition: .3s;
-        text-decoration: none;
-    }
-
-    .btn-home:hover {
-        transform: translateY(-2px);
-        background:#8a1a32;
-        text-decoration:none;
-    }
-
-    .btn-download {
-        background:#0562a8;
-        color:white;
-        border:none;
-        padding:14px 32px;
-        border-radius:12px;
-        font-weight:700;
-        width:100%;
-        margin-bottom:14px;
-        display:inline-block;
-        text-decoration:none;
-    }
-
-    .btn-download:hover{
-        background:#034c82;
-        text-decoration:none;
-        transform:translateY(-2px);
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 8px 20px;
-        background: #fef3c7;
-        color: #92400e;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 700;
-        margin-bottom: 20px;
-        border: 2px solid #fbbf24;
-    }
-</style>
-
-<div class="success-card">
-    <div class="success-icon">
-        <svg viewBox="0 0 52 52">
-            <path d="M14 27l8 8 16-16"/>
-        </svg>
+<div class="mx-auto max-w-2xl">
+  <div id="buktiCard" class="soft-card p-8 text-center sm:p-10">
+    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success/10 text-success">
+      <i class="fas fa-check text-2xl"></i>
     </div>
 
-    <h2>Booking Berhasil!</h2>
-
-    <div class="status-badge">Menunggu Konfirmasi</div>
-
-    <p class="subtitle">
-        Terima kasih telah melakukan booking. Pesanan Anda sedang diproses dan menunggu konfirmasi dari admin.
+    <h1 class="mt-5 text-2xl font-semibold text-primary">Booking Berhasil!</h1>
+    <p class="mt-2 text-sm text-base-content/60">
+      @if($isCash && !$isConfirmed)
+        Terima kasih telah memesan. Pembayaran cash Anda menunggu verifikasi admin — admin akan memastikan jumlah uang dan mencetak invoice.
+      @elseif($isCash)
+        Pembayaran cash telah dikonfirmasi admin. Terima kasih, invoice akan dicetak oleh petugas saat Anda check-in.
+      @else
+        Terima kasih telah memesan. Pesanan Anda sedang diproses dan menunggu konfirmasi admin.
+      @endif
     </p>
 
-    <div class="info-grid">
-        <div class="info-row">
-            <span class="info-label">Nama</span>
-            <span class="info-value">
-                @if($pengunjung->jenis_tamu == 'corporate')
-                    {{ $pengunjung->nama_pic ?? $pengunjung->nama }}
-                @else
-                    {{ $pengunjung->nama }}
-                @endif
-            </span>
-        </div>
-
-        <div class="info-row">
-            <span class="info-label">Jenis Booking</span>
-            <span class="info-value">{{ ucfirst($pengunjung->jenis_tamu) }}</span>
-        </div>
-
-        <div class="info-row">
-            <span class="info-label">Check-in</span>
-            <span class="info-value">{{ \Carbon\Carbon::parse($pengunjung->check_in)->format('d M Y') }}</span>
-        </div>
-
-        <div class="info-row">
-            <span class="info-label">Check-out</span>
-            <span class="info-value">{{ \Carbon\Carbon::parse($pengunjung->check_out)->format('d M Y') }}</span>
-        </div>
-
-        <div class="info-row">
-            <span class="info-label">Total Pembayaran</span>
-            <span class="info-value">Rp {{ number_format($totalPembayaran, 0, ',', '.') }}</span>
-        </div>
-
-        <div class="info-row">
-            <span class="info-label">Tanggal Booking</span>
-            <span class="info-value">{{ \Carbon\Carbon::parse($pengunjung->created_at)->format('d M Y, H:i') }}</span>
-        </div>
+    <div class="mt-4">
+      @if($isCash && !$isConfirmed)
+        <span class="inline-flex rounded-full bg-warning/15 px-4 py-1.5 text-xs font-semibold text-warning">Menunggu Konfirmasi Admin</span>
+      @elseif($isCash)
+        <span class="inline-flex rounded-full bg-secondary/10 px-4 py-1.5 text-xs font-semibold text-secondary">Lunas · Bayar di Tempat</span>
+      @else
+        <span class="inline-flex rounded-full bg-warning/15 px-4 py-1.5 text-xs font-semibold text-warning">Menunggu Konfirmasi</span>
+      @endif
     </div>
 
-    <!-- TOMBOL DOWNLOAD VOUCHER -->
-    <a href="{{ route('booking.voucher', $pengunjung->id) }}" class="btn-download">
-        Download Bukti Invoice
-    </a>
+    <dl class="mt-7 divide-y divide-base-200 rounded-2xl border border-base-200 bg-base-100 px-5 text-left text-sm">
+      <div class="flex items-center justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Nama</dt>
+        <dd class="text-right font-medium">
+          {{ $pengunjung->jenis_tamu == 'corporate' ? ($pengunjung->nama_pic ?? $pengunjung->nama) : $pengunjung->nama }}
+        </dd>
+      </div>
+      <div class="flex items-center justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Jenis Booking</dt>
+        <dd class="font-medium">{{ ucfirst($pengunjung->jenis_tamu) }}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Metode Pembayaran</dt>
+        <dd class="text-right font-medium">{{ $pengunjung->metode_pembayaran ?? '-' }}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Check-in</dt>
+        <dd class="font-medium">{{ \Carbon\Carbon::parse($pengunjung->check_in)->format('d M Y') }}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Check-out</dt>
+        <dd class="font-medium">{{ \Carbon\Carbon::parse($pengunjung->check_out)->format('d M Y') }}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Total Pembayaran</dt>
+        <dd class="font-semibold text-primary">Rp {{ number_format($totalPembayaran, 0, ',', '.') }}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Tanggal Booking</dt>
+        <dd class="font-medium">{{ \Carbon\Carbon::parse($pengunjung->created_at)->format('d M Y, H:i') }}</dd>
+      </div>
+    </dl>
 
-    <!-- TOMBOL KEMBALI -->
-    <a href="{{ url('/') }}" class="btn-home">
-        Kembali ke Beranda
-    </a>
+    <div class="mt-7 flex flex-wrap justify-center gap-3">
+      @if(!$isConfirmed)
+        <button type="button" id="downloadBukti" class="btn btn-primary rounded-full normal-case">
+          <i class="fas fa-download text-xs"></i> Download Bukti Pesan
+        </button>
+      @endif
+      <a href="{{ url('/') }}" class="btn btn-ghost rounded-full normal-case border border-base-300">
+        <i class="fas fa-house text-xs"></i> Kembali ke Beranda
+      </a>
+    </div>
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<script>
+document.getElementById('downloadBukti')?.addEventListener('click', () => {
+  const details = @json($buktiDetails);
+  const status = @json($statusText);
+  const confirmed = @json($isConfirmed);
+  const bookingId = @json($pengunjung->id);
+
+  const roundRect = (ctx, x, y, width, height, radius) => {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + width, y, x + width, y + height, radius);
+    ctx.arcTo(x + width, y + height, x, y + height, radius);
+    ctx.arcTo(x, y + height, x, y, radius);
+    ctx.arcTo(x, y, x + width, y, radius);
+    ctx.closePath();
+  };
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 900;
+  canvas.height = 720;
+  const ctx = canvas.getContext('2d');
+  const font = '"Instrument Sans", Arial, sans-serif';
+
+  ctx.fillStyle = '#f4f7fb';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.save();
+  roundRect(ctx, 30, 30, 840, 660, 24);
+  ctx.clip();
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(30, 30, 840, 660);
+  ctx.fillStyle = '#0d0b61';
+  ctx.fillRect(30, 30, 840, 120);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `700 28px ${font}`;
+  ctx.fillText('PESMA INN', 70, 82);
+  ctx.font = `400 15px ${font}`;
+  ctx.fillText('Bukti Pemesanan · KH. Mas Mansur, Surakarta', 70, 112);
+  ctx.restore();
+
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 1;
+  roundRect(ctx, 30, 30, 840, 660, 24);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(75, 188, 26, 0, Math.PI * 2);
+  ctx.fillStyle = '#d1fae5';
+  ctx.fill();
+  ctx.strokeStyle = '#16a34a';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(63, 188);
+  ctx.lineTo(72, 197);
+  ctx.lineTo(89, 178);
+  ctx.stroke();
+
+  ctx.fillStyle = '#0d0b61';
+  ctx.font = `700 32px ${font}`;
+  ctx.fillText('Booking Berhasil!', 120, 199);
+
+  ctx.font = `600 15px ${font}`;
+  const badgeWidth = ctx.measureText(status).width + 36;
+  roundRect(ctx, 70, 235, badgeWidth, 34, 17);
+  ctx.fillStyle = confirmed ? '#e0f7f8' : '#fef3c7';
+  ctx.fill();
+  ctx.fillStyle = confirmed ? '#0f6b75' : '#92400e';
+  ctx.fillText(status, 88, 258);
+
+  let y = 320;
+  details.forEach(([label, value]) => {
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#64748b';
+    ctx.font = `500 14px ${font}`;
+    ctx.fillText(label, 70, y);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#0f172a';
+    ctx.font = `600 15px ${font}`;
+    ctx.fillText(String(value), 830, y);
+    ctx.textAlign = 'left';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.beginPath();
+    ctx.moveTo(70, y + 14);
+    ctx.lineTo(830, y + 14);
+    ctx.stroke();
+    y += 44;
+  });
+
+  ctx.fillStyle = '#64748b';
+  ctx.font = `400 13px ${font}`;
+  ctx.fillText('Invoice dicetak oleh admin setelah pembayaran dikonfirmasi.', 70, 665);
+
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `bukti-booking-${bookingId}.png`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+});
+</script>
+@endsection

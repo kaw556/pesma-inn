@@ -1,203 +1,162 @@
 @extends('layouts.app')
 
+@section('title', 'Booking Korporasi · Pesma Inn')
+
 @section('content')
-<style>
-  :root{
-    --peach:#f1cfc4;
-    --primary:#a0203c;
-    --primary-20:#e0b6c0;
-    --page:#fbf7f6;
-    --white:#fff;
-    --radius:14px;
-  }
+@php
+  $fotoKamar = \App\Models\Kamar::fotoJenisPath($selectedRoom->jenis_kamar) ?? 'images/room.jpeg';
+@endphp
 
-  body{ background:var(--page); }
-
-  /* Stepper */
-  .stepper-box{ border:3px solid var(--primary); border-radius:18px; background:#fff; padding:14px 18px; display:flex; align-items:center; gap:22px; }
-  .step{display:flex;align-items:center;gap:10px;flex:1;}
-  .dot{width:20px;height:20px;border-radius:999px;background:var(--primary);}
-  .dot.hollow{background:#fff;border:3px solid var(--primary);}
-  .bar{height:10px;flex:1;background:var(--primary-20);border-radius:999px;position:relative;}
-  .bar .fill{position:absolute;inset:0;background:var(--primary);}
-  .step-pending .fill{background:var(--primary-20);}
-
-  /* Cards */
-  .card-outline{ background:#fff; border:2px solid rgba(160,32,60,.35); border-radius:18px; padding:18px; }
-  .img-room{width:100%;height:230px;object-fit:cover;border-radius:14px;}
-  label{font-weight:700;}
-  .form-control,.form-select,textarea{ border:2px solid rgba(160,32,60,.45)!important; border-radius:var(--radius)!important; padding:.7rem .9rem; }
-  .form-control[readonly] { background-color: #f8f9fa; cursor: not-allowed; }
-  .btn-primary-maroon{ background:var(--primary);color:#fff;border:none; border-radius:12px;padding:.7rem 1.2rem;font-weight:700; }
-  .btn-outline-maroon { display: inline-block; padding: 10px 24px; border-radius: 18px; border: 3px solid #9a2d3b; color: #9a2d3b !important; font-weight: 600; text-decoration: none; background-color: transparent; transition: 0.2s ease-in-out; }
-  .btn-outline-maroon:hover { background-color: #9a2d3b; color: white !important; }
-</style>
-
-<div class="stepper-box mb-4">
-  <div class="step step-complete">
-    <span class="dot"></span><strong>Isi Data</strong>
-    <div class="bar"><span class="fill"></span></div>
-  </div>
-  <div class="step step-complete">
-    <span class="dot"></span><strong>Booking</strong>
-    <div class="bar"><span class="fill"></span></div>
-  </div>
-  <div class="step step-pending">
-    <span class="dot hollow"></span><strong>Payment</strong>
-    <div class="bar"><span class="fill"></span></div>
-  </div>
+<div class="mb-8">
+  <span class="section-kicker">Pemesanan</span>
+  <h1 class="section-heading mt-2">Booking Korporasi</h1>
+  <p class="mt-2 text-sm text-base-content/60">Lengkapi data penanggung jawab kegiatan untuk melanjutkan ke pembayaran.</p>
 </div>
 
-<form action="{{ route('booking.corporate.store') }}" method="POST" enctype="multipart/form-data">
+<div class="soft-card mb-6 flex flex-wrap items-center gap-3 p-4 text-xs font-semibold sm:gap-5">
+  <span class="flex items-center gap-2 text-primary">
+    <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] text-white"><i class="fas fa-check"></i></span>
+    Isi Data
+  </span>
+  <span class="h-px min-w-[30px] flex-1 bg-base-300"></span>
+  <span class="flex items-center gap-2 text-primary">
+    <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] text-white"><i class="fas fa-check"></i></span>
+    Booking
+  </span>
+  <span class="h-px min-w-[30px] flex-1 bg-base-300"></span>
+  <span class="flex items-center gap-2 text-base-content/40">
+    <span class="flex h-6 w-6 items-center justify-center rounded-full border border-base-300 text-[10px]">3</span>
+    Payment
+  </span>
+</div>
+
+<form action="{{ route('booking.corporate.store') }}" method="POST" enctype="multipart/form-data" class="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
   @csrf
   <input type="hidden" name="jenis_tamu" value="corporate">
 
-  <div class="row g-4">
+  <section class="soft-card p-6 sm:p-8">
+    <h2 class="text-lg font-semibold text-primary">Data Penanggung Jawab</h2>
 
-    <div class="col-lg-7">
-      <div class="card-outline">
-        
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label>Nama Lengkap PIC</label>
-            <input type="text" name="nama_pic" class="form-control" placeholder="Tulis nama lengkap PIC" value="{{ old('nama_pic') }}" required>
-            @error('nama_pic') <div class="text-danger small">{{ $message }}</div> @enderror
-          </div>
-          <div class="col-md-6 mb-3">
-            <label>No Telepon PIC</label>
-            <input type="text" name="no_telp_pic" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="form-control" placeholder="Nomor WhatsApp" value="{{ old('no_telp_pic') }}" required>
-            @error('no_telp_pic') <div class="text-danger small">{{ $message }}</div> @enderror
-          </div>
+    <div class="mt-5 space-y-5">
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="nama_pic" class="mb-1.5 block text-xs font-medium text-base-content/70">Nama Lengkap PIC</label>
+          <input id="nama_pic" type="text" name="nama_pic" value="{{ old('nama_pic') }}" required placeholder="Tulis nama lengkap PIC" class="input input-bordered w-full">
+          @error('nama_pic') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
         </div>
+        <div>
+          <label for="no_telp_pic" class="mb-1.5 block text-xs font-medium text-base-content/70">No Telepon PIC</label>
+          <input id="no_telp_pic" type="text" name="no_telp_pic" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="{{ old('no_telp_pic') }}" required placeholder="Nomor WhatsApp" class="input input-bordered w-full">
+          @error('no_telp_pic') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
+        </div>
+      </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label>No Identitas PIC</label>
-            <input type="text" name="no_identitas" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="form-control" placeholder="KTP/Paspor" value="{{ old('no_identitas') }}" required>
-            @error('no_identitas') <div class="text-danger small">{{ $message }}</div> @enderror
-          </div>
-          <div class="col-md-6 mb-3">
-            <label>Upload Bukti Identitas <span style="color:red">*</span></label>
-            <input type="file" name="bukti_identitas" class="form-control" accept=".jpg,.jpeg,.png" required>
-            @error('bukti_identitas') <div class="text-danger small">{{ $message }}</div> @enderror
-          </div>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="no_identitas" class="mb-1.5 block text-xs font-medium text-base-content/70">No Identitas PIC</label>
+          <input id="no_identitas" type="text" name="no_identitas" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="{{ old('no_identitas') }}" required placeholder="KTP/Paspor" class="input input-bordered w-full">
+          @error('no_identitas') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
         </div>
+        <div>
+          <label for="bukti_identitas" class="mb-1.5 block text-xs font-medium text-base-content/70">Upload Bukti Identitas <span class="text-error">*</span></label>
+          <input id="bukti_identitas" type="file" name="bukti_identitas" accept=".jpg,.jpeg,.png" required class="file-input file-input-bordered w-full">
+          @error('bukti_identitas') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
+        </div>
+      </div>
 
-        <div class="mb-3">
-          <label>Nama Instansi / Persyarikatan</label>
-          <input type="text" name="asal_persyarikatan" class="form-control" placeholder="Contoh: UMS, Muhammadiyah..." value="{{ old('asal_persyarikatan') }}">
-        </div>
+      <div>
+        <label for="asal_persyarikatan" class="mb-1.5 block text-xs font-medium text-base-content/70">Nama Instansi / Persyarikatan</label>
+        <input id="asal_persyarikatan" type="text" name="asal_persyarikatan" value="{{ old('asal_persyarikatan') }}" placeholder="Contoh: UMS, Muhammadiyah..." class="input input-bordered w-full">
+      </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label>Nama Kegiatan</label>
-                <input type="text" name="nama_kegiatan" class="form-control" placeholder="Contoh: Workshop..." value="{{ old('nama_kegiatan') }}">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label>Tanggal Kegiatan</label>
-                <input type="date" name="tanggal_persyarikatan" class="form-control" value="{{ old('tanggal_persyarikatan') }}">
-            </div>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="nama_kegiatan" class="mb-1.5 block text-xs font-medium text-base-content/70">Nama Kegiatan</label>
+          <input id="nama_kegiatan" type="text" name="nama_kegiatan" value="{{ old('nama_kegiatan') }}" placeholder="Contoh: Workshop..." class="input input-bordered w-full">
         </div>
+        <div>
+          <label for="tanggal_persyarikatan" class="mb-1.5 block text-xs font-medium text-base-content/70">Tanggal Kegiatan</label>
+          <input id="tanggal_persyarikatan" type="date" name="tanggal_persyarikatan" value="{{ old('tanggal_persyarikatan') }}" class="input input-bordered w-full">
+        </div>
+      </div>
 
-        <div class="mb-3">
-          <label>Jumlah Peserta</label>
-          <input type="number" name="jumlah_peserta" class="form-control" min="1" placeholder="Total orang" value="{{ old('jumlah_peserta') }}" required>
-          @error('jumlah_peserta') <div class="text-danger small">{{ $message }}</div> @enderror
-        </div>
+      <div>
+        <label for="jumlah_peserta" class="mb-1.5 block text-xs font-medium text-base-content/70">Jumlah Peserta</label>
+        <input id="jumlah_peserta" type="number" name="jumlah_peserta" min="1" value="{{ old('jumlah_peserta') }}" placeholder="Total orang" required class="input input-bordered w-full">
+        @error('jumlah_peserta') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
+      </div>
 
-        <div class="mb-3">
-          <label>Special Request</label>
-          <textarea name="special_request" rows="3" class="form-control" placeholder="Tulis permintaan khusus (opsional)">{{ old('special_request') }}</textarea>
-        </div>
-        
-        <div class="d-flex gap-3 mt-2">
-             <button type="submit" class="btn-primary-maroon">Book now</button>
-             <a href="{{ url()->previous() }}" class="btn-outline-maroon">Cancel</a>
-        </div>
+      <div>
+        <label for="special_request" class="mb-1.5 block text-xs font-medium text-base-content/70">Special Request</label>
+        <textarea id="special_request" name="special_request" rows="3" placeholder="Tulis permintaan khusus (opsional)" class="textarea textarea-bordered w-full">{{ old('special_request') }}</textarea>
+      </div>
 
+      <div class="flex flex-wrap gap-3 border-t border-base-200 pt-5">
+        <button type="submit" class="btn btn-primary rounded-full normal-case">Book Now <i class="fas fa-arrow-right text-xs"></i></button>
+        <a href="{{ url()->previous() }}" class="btn btn-ghost rounded-full normal-case border border-base-300">Batal</a>
       </div>
     </div>
+  </section>
 
-    <div class="col-lg-5">
-      <div class="card-outline h-100">
+  <aside class="soft-card h-fit p-6 sm:p-8">
+    <span class="section-kicker">Ringkasan Kamar</span>
 
-        @php
-          $fotoMap = [
-            'Deluxe' => 'deluxe.jpg',
-            'Guestroom AC' => 'Guestroom AC.jpeg',
-            'Standard' => 'Standar Room.jpg',
-            'Student AC' => 'Student AC.jpeg',
-            'Student Non AC' => 'Student Non AC.jpg',
-          ];
-          $foto = $selectedRoom ? ($fotoMap[$selectedRoom->jenis_kamar] ?? 'default.jpg') : 'default.jpg';
-        @endphp
+    <img src="{{ asset($fotoKamar) }}" alt="{{ $selectedRoom->jenis_kamar }}" class="mt-4 h-52 w-full rounded-2xl object-cover">
 
-        <img src="{{ asset('images/'.$foto) }}" class="img-room mb-3">
+    <div class="mt-4 flex items-start justify-between gap-4">
+      <div>
+        <h2 class="text-lg font-semibold text-primary">{{ $selectedRoom->jenis_kamar }}</h2>
+        <p class="mt-1 text-xs text-base-content/50">{{ $selectedRoom->kode_kamar }}</p>
+      </div>
+      <p class="shrink-0 text-sm font-semibold text-secondary">Rp {{ number_format($selectedRoom->harga, 0, ',', '.') }}<span class="font-normal text-base-content/50"> /malam</span></p>
+    </div>
 
-        <div class="d-flex justify-content-between mb-2">
-          <h4 class="fw-bold">{{ $selectedRoom->jenis_kamar }}</h4>
-          <span class="fw-bold">{{ number_format($selectedRoom->harga,0,',','.') }}/malam</span>
-        </div>
+    <input type="hidden" name="kode_kamar" value="{{ $selectedRoom->kode_kamar }}">
+    <input type="hidden" name="jumlah_kamar" value="{{ $jumlah_kamar ?? 1 }}">
 
-        <input type="hidden" name="kode_kamar" value="{{ $selectedRoom->kode_kamar }}">
-        <input type="hidden" name="jumlah_kamar" value="{{ $jumlah_kamar ?? 1 }}">
+    <div class="mt-5 flex items-center gap-2 rounded-xl bg-secondary/10 px-4 py-3 text-sm">
+      <i class="fas fa-building text-secondary"></i>
+      <span>Memesan <strong>{{ $jumlah_kamar ?? 1 }} kamar</strong></span>
+    </div>
 
-        <div class="alert alert-info py-2" style="font-size:0.9rem; background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460;">
-            <i class="fas fa-building"></i> Memesan: <strong>{{ $jumlah_kamar ?? 1 }} Kamar</strong>
-        </div>
-
-        <hr>
-
-        <div class="mb-3">
-          <label>Check-in</label>
-          <input type="date" name="check_in" id="check_in" class="form-control" value="{{ old('check_in', $checkin) }}" required readonly style="background-color: #f8f9fa; pointer-events: none;">
-          <small class="text-muted">Tanggal sesuai pilihan di Beranda</small>
-        </div>
-
-        <div class="mb-3">
-          <label>Check-out</label>
-          <input type="date" name="check_out" id="check_out" class="form-control" value="{{ old('check_out', $checkout) }}" required readonly style="background-color: #f8f9fa; pointer-events: none;">
-          <small class="text-muted">Tanggal sesuai pilihan di Beranda</small>
-        </div>
-
+    <div class="mt-5 grid gap-4 border-t border-base-200 pt-5 sm:grid-cols-2">
+      <div>
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50">Check-in</p>
+        <input type="date" name="check_in" id="check_in" value="{{ old('check_in', $checkin) }}" required readonly class="input input-bordered mt-1.5 w-full bg-base-200/60">
+        @error('check_in') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
+      </div>
+      <div>
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50">Check-out</p>
+        <input type="date" name="check_out" id="check_out" value="{{ old('check_out', $checkout) }}" required readonly class="input input-bordered mt-1.5 w-full bg-base-200/60">
+        @error('check_out') <p class="mt-1 text-xs text-error">{{ $message }}</p> @enderror
       </div>
     </div>
-  </div>
+    <p class="mt-2 text-xs text-base-content/50">Tanggal sesuai pilihan di halaman beranda.</p>
+  </aside>
 </form>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const checkIn = document.getElementById("check_in");
-    const checkOut = document.getElementById("check_out");
-    const form = document.querySelector('form');
-    
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            const namaPic = document.querySelector('[name="nama_pic"]').value.trim();
-            const bukti = document.querySelector('[name="bukti_identitas"]').files.length;
+document.addEventListener('DOMContentLoaded', function () {
+  const checkIn = document.getElementById('check_in');
+  const checkOut = document.getElementById('check_out');
+  const form = document.querySelector('form');
 
-            if (!namaPic || bukti === 0) {
-                e.preventDefault();
-                // Use Swal if available, otherwise alert
-                if(typeof Swal !== 'undefined') {
-                    Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Mohon lengkapi data wajib (Nama PIC, Bukti Identitas)!', confirmButtonColor: '#a0203c' });
-                } else {
-                    alert('Mohon lengkapi data wajib (Nama PIC, Bukti Identitas)!');
-                }
-                return false;
-            }
-            
-            if (new Date(checkOut.value) <= new Date(checkIn.value)) {
-                e.preventDefault();
-                if(typeof Swal !== 'undefined') {
-                    Swal.fire({ icon: 'error', title: 'Tanggal Tidak Valid', text: 'Tanggal check-out harus setelah tanggal check-in', confirmButtonColor: '#a0203c' });
-                } else {
-                    alert('Tanggal check-out harus setelah tanggal check-in');
-                }
-                return false;
-            }
-        });
+  form?.addEventListener('submit', function (event) {
+    const pic = document.querySelector('[name="nama_pic"]')?.value.trim();
+    const peserta = document.querySelector('[name="jumlah_peserta"]')?.value.trim();
+    const hasProof = document.querySelector('[name="bukti_identitas"]')?.files.length > 0;
+
+    if (!pic || !peserta || !hasProof) {
+      event.preventDefault();
+      Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Lengkapi data wajib (Nama PIC, Jumlah Peserta, Bukti Identitas).', confirmButtonColor: '#0d0b61' });
+      return;
     }
+
+    if (new Date(checkOut.value) <= new Date(checkIn.value)) {
+      event.preventDefault();
+      Swal.fire({ icon: 'error', title: 'Tanggal Tidak Valid', text: 'Check-out harus setelah check-in.', confirmButtonColor: '#0d0b61' });
+    }
+  });
 });
 </script>
 @endsection

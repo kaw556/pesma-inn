@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" media="(prefers-color-scheme: light)" href="{{ asset('img/logo-resmi-pesma.png') }}">
+    <link rel="icon" type="image/png" media="(prefers-color-scheme: dark)" href="{{ asset('img/logo-resmi-pesma-white.png') }}">
     <meta name="description" content="Pesma Inn KH. Mas Mansur — penginapan nyaman, terjangkau, dan strategis di Surakarta.">
     <title>Guest House KH. Mas Mansur</title>
 
